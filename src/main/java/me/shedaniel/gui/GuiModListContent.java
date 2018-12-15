@@ -2,7 +2,10 @@ package me.shedaniel.gui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
-import net.minecraft.client.gui.*;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiSlot;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -14,18 +17,18 @@ import net.minecraft.util.math.MathHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GuiModListScrollable extends GuiSlot {
+public class GuiModListContent extends GuiSlot {
 	
 	private List<RiftMod> modList = new ArrayList<>();
 	private GuiModList parent;
 	private FontRenderer fontRenderer;
 	private int currentIndex = -1;
 	
-	public GuiModListScrollable(GuiModList parent, List<RiftMod> modList) {
+	public GuiModListContent(GuiModList parent, List<RiftMod> modList) {
 		super(
 				parent.getMinecraftInstance(),
 				parent.width,
-				parent.height - 80,
+				parent.height,
 				40,
 				parent.height - 40,
 				40
@@ -81,12 +84,8 @@ public class GuiModListScrollable extends GuiSlot {
 		for (String l : list) {
 			fontRenderer.drawStringWithShadow(l, (float) (j + 32 + 2), (float) (i + 12 + 10 * list.indexOf(l)), 8421504);
 		}
-		new GuiButton(700 + slotIndex, left + width / 2 + getListWidth() / 2 - 65, i + 5, 50, 20, I18n.format("riftmodlist.view")) {
-			@Override
-			public void onClick(double mouseX, double mouseY) {
-				System.out.println('a');
-			}
-		}.render(mouseXIn, mouseYIn, partialTicks);
+		new GuiButton(700 + slotIndex, left + width / 2 + getListWidth() / 2 - 65, i + 6, 50, 20,
+				I18n.format("riftmodlist.view")) {}.render(mouseXIn, mouseYIn, partialTicks);
 	}
 	
 	@Override
@@ -105,7 +104,7 @@ public class GuiModListScrollable extends GuiSlot {
 			}
 			index++;
 		}
-		if (p_mouseClicked_1_ > x && p_mouseClicked_1_ < x + 50 && p_mouseClicked_3_ > y + 5 && p_mouseClicked_3_ < y + 25) {
+		if (p_mouseClicked_1_ > x && p_mouseClicked_1_ < x + 50 && p_mouseClicked_3_ > y + 6 && p_mouseClicked_3_ < y + 26) {
 			Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			//Open View Menu WIP
 		} else if (isMouseInList(p_mouseClicked_1_, p_mouseClicked_3_)) {

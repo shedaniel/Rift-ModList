@@ -18,11 +18,11 @@ public class GuiModList extends GuiScreen {
 	private List<RiftMod> modList = new ArrayList<>();
 	
 	@Nullable
-	private GuiModListScrollable guiModListScrollable;
+	private GuiModListContent guiModListContent;
 	
 	public GuiModList() {
 		for (ModInfo modInfo : RiftLoader.instance.getMods()) {
-			RiftMod mod = new RiftMod(modInfo.id, modInfo.name);
+			RiftMod mod = new RiftMod(modInfo.id, modInfo.name, modInfo.source);
 			mod.setAuthors(modInfo.authors);
 			modList.add(mod);
 		}
@@ -36,13 +36,14 @@ public class GuiModList extends GuiScreen {
 				Util.getOSType().openFile(RiftLoader.instance.modsDir);
 			}
 		});
-		this.guiModListScrollable = new GuiModListScrollable(this, modList);
+		this.guiModListContent = new GuiModListContent(this, modList);
+		this.children.add(guiModListContent);
+		this.setFocused(guiModListContent);
 	}
 	
 	@Override
 	public void render(int mouseX, int mouseY, float partialTicks) {
-		this.drawBackground(0);
-		this.guiModListScrollable.drawScreen(mouseX, mouseY, partialTicks);
+		this.guiModListContent.drawScreen(mouseX, mouseY, partialTicks);
 		this.drawCenteredString(this.fontRenderer, I18n.format("riftmodlist.mods"), this.width / 2, this.height / 16, 16777215);
 		super.render(mouseX, mouseY, partialTicks);
 	}
@@ -54,11 +55,11 @@ public class GuiModList extends GuiScreen {
 	FontRenderer getFontRenderer() {
 		return fontRenderer;
 	}
-	
-	@Override
-	public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
-		guiModListScrollable.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_);
-		return super.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_);
-	}
+//
+//	@Override
+//	public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
+//		guiModListScrollable.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_);
+//		return super.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_);
+//	}
 }
 

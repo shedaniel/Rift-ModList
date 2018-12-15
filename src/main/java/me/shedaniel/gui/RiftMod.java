@@ -1,10 +1,8 @@
 package me.shedaniel.gui;
 
-import com.sun.org.apache.xml.internal.serializer.ToHTMLStream;
-import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,15 +10,17 @@ public class RiftMod {
 	
 	private List<String> authors;
 	private String id, name;
+	private ResourceLocation resourceLocation;
 	
-	public RiftMod(String id) {
-		this(id, id);
+	public RiftMod(String id, File file) {
+		this(id, id, file);
 	}
 	
-	public RiftMod(String id, String name) {
+	public RiftMod(String id, String name, File file) {
 		this.id = id;
 		this.name = name;
 		this.authors = new ArrayList<>();
+		resourceLocation = new ResourceLocation("textures/misc/unknown_pack.png");
 	}
 	
 	public void setAuthors(List<String> authors) {
@@ -44,7 +44,7 @@ public class RiftMod {
 	}
 	
 	public ResourceLocation getModIcon() {
-		return new ResourceLocation("textures/misc/unknown_pack.png");
+		return resourceLocation;
 	}
 	
 	@Override
