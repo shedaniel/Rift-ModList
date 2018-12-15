@@ -5,5 +5,8 @@
   "riftmodlist.loaded_mods": "Loaded Mods",
   "riftmodlist.authors": "By",
   "riftmodlist.noone": "No One",
-  "riftmodlist.view": "View"
+  "riftmodlist.view": "View",
+  "riftmodlist.versions": "Versions: %s",
+  "riftmodlist.url": "Website: %s",
+  "riftmodlist.visit_website": "Visit Website"
 }

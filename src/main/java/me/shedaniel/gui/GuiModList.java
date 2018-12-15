@@ -11,6 +11,7 @@ import org.dimdev.riftloader.RiftLoader;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GuiModList extends GuiScreen {
@@ -24,8 +25,19 @@ public class GuiModList extends GuiScreen {
 		for (ModInfo modInfo : RiftLoader.instance.getMods()) {
 			RiftMod mod = new RiftMod(modInfo.id, modInfo.name, modInfo.source);
 			mod.setAuthors(modInfo.authors);
+			mod.setVerions(mod.loadValueFromJar(modInfo.source, "version"));
+			mod.setUrl(mod.loadValueFromJar(modInfo.source, "url"));
+			mod.setDescription(mod.loadValueFromJar(modInfo.source, "description", "A mod for Rift."));
+			if (modInfo.id.equals("optifine")) {
+				mod.setUrl("https://www.optifine.net");
+				mod.setDescription("OptiFine is a Minecraft optimization mod.\n" +
+						"It allows Minecraft to run faster and look better with full support for HD textures and many configuration options.");
+			}
 			modList.add(mod);
 		}
+		Collections.sort(modList, (riftMod, anotherMod) -> {
+			return riftMod.getName().compareTo(anotherMod.getName());
+		});
 	}
 	
 	@Override
@@ -55,11 +67,11 @@ public class GuiModList extends GuiScreen {
 	FontRenderer getFontRenderer() {
 		return fontRenderer;
 	}
-//
-//	@Override
-//	public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
-//		guiModListScrollable.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_);
-//		return super.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_);
-//	}
+	
+	@Nullable
+	public GuiModListContent getGuiModListContent() {
+		return guiModListContent;
+	}
+	
 }
 

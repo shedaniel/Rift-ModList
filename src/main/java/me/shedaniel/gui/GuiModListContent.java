@@ -4,15 +4,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiSlot;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.gui.GuiSlot;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.util.math.MathHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,18 +80,19 @@ public class GuiModListContent extends GuiSlot {
 		for (String l : list) {
 			fontRenderer.drawStringWithShadow(l, (float) (j + 32 + 2), (float) (i + 12 + 10 * list.indexOf(l)), 8421504);
 		}
-		new GuiButton(700 + slotIndex, left + width / 2 + getListWidth() / 2 - 65, i + 6, 50, 20,
-				I18n.format("riftmodlist.view")) {}.render(mouseXIn, mouseYIn, partialTicks);
+		new GuiButton(700 + slotIndex, left + width / 2 + getListWidth() / 2 - 61, i + 6, 50, 20,
+				I18n.format("riftmodlist.view")) {
+		}.render(mouseXIn, mouseYIn, partialTicks);
 	}
 	
 	@Override
 	protected int getContentHeight() {
-		return this.getSize() * 30;
+		return this.getSize() * 40;
 	}
 	
 	@Override
 	public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
-		int x = left + width / 2 + getListWidth() / 2 - 65, y = 0, index = 0;
+		int x = left + width / 2 + getListWidth() / 2 - 61, y = 0, index = 0;
 		while (true) {
 			if (getY(index) > p_mouseClicked_3_) {
 				index--;
@@ -106,7 +103,7 @@ public class GuiModListContent extends GuiSlot {
 		}
 		if (p_mouseClicked_1_ > x && p_mouseClicked_1_ < x + 50 && p_mouseClicked_3_ > y + 6 && p_mouseClicked_3_ < y + 26) {
 			Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-			//Open View Menu WIP
+			Minecraft.getInstance().displayGuiScreen(new GuiModListView(modList.get(index)));
 		} else if (isMouseInList(p_mouseClicked_1_, p_mouseClicked_3_)) {
 			Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			currentIndex = index;
