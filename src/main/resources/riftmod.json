@@ -1,0 +1,13 @@
+{
+  "id": "riftmodlist",
+  "name": "Rift Mod List",
+  "version": "1.0",
+  "authors": [
+    "Danielshe"
+  ],
+  "listeners": [
+    "me.shedaniel.RiftModList"
+  ],
+  "url": "https://shedaniel.me",
+  "description": "Adds a mod list to your client."
+}
