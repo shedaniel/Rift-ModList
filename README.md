@@ -21,3 +21,5 @@ You can add more data to your `riftmod.json` file.
   "description": "Adds a mod list to your client."
 }
 ```
+### Screenshot
+![Screenshot](https://media.discordapp.net/attachments/480755664675667980/523507883330240524/unknown.png)
