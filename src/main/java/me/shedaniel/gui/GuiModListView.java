@@ -1,5 +1,6 @@
 package me.shedaniel.gui;
 
+import me.shedaniel.RiftModList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
@@ -90,7 +91,7 @@ public class GuiModListView extends GuiScreen {
 			this.fontRenderer.drawStringWithShadow(url, 48, 31, 8421504);
 		}
 		String description = mod.getDescription();
-		List<String> list = this.mc.fontRenderer.listFormattedStringToWidth(description, 157);
+		List<String> list = this.mc.fontRenderer.listFormattedStringToWidth(description, 400);
 		for (int i1 = 0; i1 < 2 && i1 < list.size(); ++i1)
 			this.fontRenderer.drawStringWithShadow(list.get(i1), 48, (float) (60 + 10 * i1), 16777215);
 		
@@ -112,6 +113,21 @@ public class GuiModListView extends GuiScreen {
 		bufferbuilder.pos((double) (0 + this.width), (double) startY, 0.0D).tex((double) ((float) this.width / 32.0F), (double) ((float) startY / 32.0F)).color(red, green, blue, startAlpha).endVertex();
 		bufferbuilder.pos((double) 0, (double) startY, 0.0D).tex(0.0D, (double) ((float) startY / 32.0F)).color(red, green, blue, startAlpha).endVertex();
 		tessellator.draw();
+	}
+	
+	@Override
+	public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_)
+	{
+		if (p_keyPressed_1_ == 256 && this.allowCloseWithEscape())
+		{
+			this.close();
+			this.mc.displayGuiScreen(RiftModList.guiModList);
+			return true;
+		}
+		else
+		{
+			return super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);
+		}
 	}
 	
 }
