@@ -78,7 +78,7 @@ public class GuiModListView extends GuiScreen {
 		if (j1 > 300)
 			modName = fontRenderer.trimStringToWidth(modName, 300 - 3) + "...";
 		this.fontRenderer.drawStringWithShadow(modName, 48, 11, 16777215);
-		String versions = I18n.format("riftmodlist.versions", mod.getVerions());
+		String versions = I18n.format("riftmodlist.versions", mod.getVersions());
 		j1 = fontRenderer.getStringWidth(versions);
 		if (j1 > 300)
 			versions = fontRenderer.trimStringToWidth(versions, 300 - 3) + "...";

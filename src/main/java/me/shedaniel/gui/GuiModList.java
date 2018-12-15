@@ -25,7 +25,7 @@ public class GuiModList extends GuiScreen {
 		for (ModInfo modInfo : RiftLoader.instance.getMods()) {
 			RiftMod mod = new RiftMod(modInfo.id, modInfo.name, modInfo.source);
 			mod.setAuthors(modInfo.authors);
-			mod.setVerions(mod.loadValueFromJar(modInfo.source, "version"));
+			mod.setVersions(mod.loadValueFromJar(modInfo.source, "version"));
 			mod.setUrl(mod.loadValueFromJar(modInfo.source, "url"));
 			mod.setDescription(mod.loadValueFromJar(modInfo.source, "description", "A mod for Rift."));
 			if (modInfo.id.equals("optifine")) {

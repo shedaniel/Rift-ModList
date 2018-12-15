@@ -3,22 +3,27 @@ package me.shedaniel.gui;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.util.ResourceLocation;
-import org.apache.logging.log4j.LogManager;
-import org.dimdev.riftloader.ModInfo;
-import org.dimdev.riftloader.RiftLoader;
 
-import java.io.*;
+import javax.annotation.Nullable;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.zip.ZipException;
 
 public class RiftMod {
 	
+	@Nullable
+	private NativeImage nativeImage;
 	private List<String> authors;
-	private String id, name, verions, url, description;
+	private String id, name, versions, url, description;
 	private ResourceLocation resourceLocation;
 	
 	public RiftMod(String id, File file) {
@@ -28,11 +33,25 @@ public class RiftMod {
 	public RiftMod(String id, String name, File file) {
 		this.id = id;
 		this.name = name;
-		this.verions = "Unidentified";
+		this.versions = "Unidentified";
 		this.url = "Unidentified";
 		this.description = "A mod for Rift.";
 		this.authors = new ArrayList<>();
-		resourceLocation = new ResourceLocation("textures/misc/unknown_pack.png");
+		this.nativeImage = null;
+		tryLoadPackIcon(file);
+	}
+	
+	private void tryLoadPackIcon(File file) {
+		if (!file.isFile()) return;
+		try (JarFile jar = new JarFile(file)) {
+			JarEntry entry = jar.getJarEntry("pack.png");
+			if (entry != null) {
+				InputStream inputStream = jar.getInputStream(entry);
+				this.nativeImage = NativeImage.read(inputStream);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public String getDescription() {
@@ -43,12 +62,12 @@ public class RiftMod {
 		this.description = description;
 	}
 	
-	public String getVerions() {
-		return verions;
+	public String getVersions() {
+		return versions;
 	}
 	
-	public void setVerions(String verions) {
-		this.verions = verions;
+	public void setVersions(String versions) {
+		this.versions = versions;
 	}
 	
 	public void setUrl(String url) {
@@ -80,6 +99,12 @@ public class RiftMod {
 	}
 	
 	public ResourceLocation getModIcon() {
+		if (this.resourceLocation == null) {
+			if (this.nativeImage == null)
+				this.resourceLocation = new ResourceLocation("textures/misc/unknown_pack.png");
+			else
+				this.resourceLocation = Minecraft.getInstance().getTextureManager().getDynamicTextureLocation("texturepackicon", new DynamicTexture(this.nativeImage));
+		}
 		return resourceLocation;
 	}
 	
@@ -103,7 +128,9 @@ public class RiftMod {
 				if (object.has(value))
 					return object.get(value).getAsString();
 			}
-		} catch (Exception e) {e.printStackTrace();}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return defaultAnswer;
 	}
 	
