@@ -1,0 +1,11 @@
+{
+  "id": "riftmodlist",
+  "name": "Rift Mod List",
+  "version": "1.0-SNAPSHOT",
+  "authors": [
+    "Danielshe"
+  ],
+  "listeners": [
+    "me.shedaniel.RiftModList"
+  ]
+}
