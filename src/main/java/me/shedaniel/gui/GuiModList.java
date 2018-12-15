@@ -23,7 +23,7 @@ public class GuiModList extends GuiScreen {
 	
 	public GuiModList() {
 		for (ModInfo modInfo : RiftLoader.instance.getMods()) {
-			RiftMod mod = new RiftMod(modInfo.id, modInfo.name, modInfo.source);
+			RiftMod mod = new RiftMod(modInfo.id, modInfo.name, modInfo.source, false);
 			mod.setAuthors(modInfo.authors);
 			mod.setVersions(mod.loadValueFromJar(modInfo.source, "version"));
 			mod.setUrl(mod.loadValueFromJar(modInfo.source, "url"));
@@ -33,6 +33,7 @@ public class GuiModList extends GuiScreen {
 				mod.setDescription("OptiFine is a Minecraft optimization mod.\n" +
 						"It allows Minecraft to run faster and look better with full support for HD textures and many configuration options.");
 			}
+			mod.tryLoadPackIcon(modInfo.source, mod.loadValueFromJar(modInfo.source, "icon_file", "pack.png"));
 			modList.add(mod);
 		}
 		Collections.sort(modList, (riftMod, anotherMod) -> {

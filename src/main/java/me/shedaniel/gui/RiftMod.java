@@ -10,7 +10,6 @@ import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -27,10 +26,10 @@ public class RiftMod {
 	private ResourceLocation resourceLocation;
 	
 	public RiftMod(String id, File file) {
-		this(id, id, file);
+		this(id, id, file, false);
 	}
 	
-	public RiftMod(String id, String name, File file) {
+	public RiftMod(String id, String name, File file, boolean loadIcon) {
 		this.id = id;
 		this.name = name;
 		this.versions = "Unidentified";
@@ -38,13 +37,14 @@ public class RiftMod {
 		this.description = "A mod for Rift.";
 		this.authors = new ArrayList<>();
 		this.nativeImage = null;
-		tryLoadPackIcon(file);
+		if (loadIcon)
+			tryLoadPackIcon(file, "pack.png");
 	}
 	
-	private void tryLoadPackIcon(File file) {
+	public void tryLoadPackIcon(File file, String iconFile) {
 		if (!file.isFile()) return;
 		try (JarFile jar = new JarFile(file)) {
-			JarEntry entry = jar.getJarEntry("pack.png");
+			JarEntry entry = jar.getJarEntry(iconFile);
 			if (entry != null) {
 				InputStream inputStream = jar.getInputStream(entry);
 				this.nativeImage = NativeImage.read(inputStream);
