@@ -1,7 +1,7 @@
 package me.shedaniel.gui;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SimpleSound;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
@@ -102,10 +102,10 @@ public class GuiModListContent extends GuiSlot {
 			index++;
 		}
 		if (p_mouseClicked_1_ > x && p_mouseClicked_1_ < x + 50 && p_mouseClicked_3_ > y + 6 && p_mouseClicked_3_ < y + 26) {
-			Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+			Minecraft.getInstance().getSoundHandler().play(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			Minecraft.getInstance().displayGuiScreen(new GuiModListView(modList.get(index)));
-		} else if (isMouseInList(p_mouseClicked_1_, p_mouseClicked_3_)) {
-			Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+		} else if (p_mouseClicked_3_ > 40 && p_mouseClicked_3_ < parent.height - 40) {
+			Minecraft.getInstance().getSoundHandler().play(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			currentIndex = index;
 		}
 		return super.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_);

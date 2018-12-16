@@ -50,7 +50,7 @@ public class GuiModList extends GuiScreen {
 			}
 		});
 		this.guiModListContent = new GuiModListContent(this, modList);
-		this.children.add(guiModListContent);
+		this.eventListeners.add(guiModListContent);
 		this.setFocused(guiModListContent);
 	}
 	
