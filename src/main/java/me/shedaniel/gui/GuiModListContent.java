@@ -9,9 +9,10 @@ import net.minecraft.client.gui.GuiSlot;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.SoundEvents;
+import org.dimdev.riftloader.ModInfo;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Supplier;
 
 public class GuiModListContent extends GuiSlot {
 	
@@ -20,7 +21,7 @@ public class GuiModListContent extends GuiSlot {
 	private FontRenderer fontRenderer;
 	private int currentIndex = -1;
 	
-	public GuiModListContent(GuiModList parent, List<RiftMod> modList) {
+	public GuiModListContent(GuiModList parent, String searchTerm) {
 		super(
 				parent.getMinecraftInstance(),
 				parent.width,
@@ -30,9 +31,10 @@ public class GuiModListContent extends GuiSlot {
 				40
 		);
 		this.parent = parent;
-		this.modList = modList;
+		this.modList = new ArrayList<>();
 		this.fontRenderer = mc.fontRenderer;
 		setShowSelectionBox(true);
+		searchFilter(searchTerm, true);
 	}
 	
 	@Override
@@ -110,4 +112,17 @@ public class GuiModListContent extends GuiSlot {
 		}
 		return super.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_);
 	}
+	
+	public void searchFilter(String searchTerm, boolean var2) {
+		this.focusNext();
+		List<RiftMod> modList = new LinkedList<>(GuiModList.modList);
+		if (modList == null || var2) {
+			modList = new ArrayList<>();
+			GuiModList.regenerateMods();
+			modList.addAll(GuiModList.modList);
+			modList.sort(Comparator.comparing(riftMod -> riftMod.getName()));
+		}
+		this.modList = modList;
+	}
+	
 }

@@ -2,6 +2,7 @@ package me.shedaniel.mixin;
 
 import me.shedaniel.RiftModList;
 import me.shedaniel.gui.GuiModList;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMainMenu;
@@ -45,6 +46,7 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
 			public void onClick(double mouseX, double mouseY) {
 				if (RiftModList.guiModList == null)
 					RiftModList.guiModList = new GuiModList();
+				RiftModList.guiModList.setPreviousGui(Minecraft.getInstance().currentScreen);
 				mc.displayGuiScreen(RiftModList.guiModList);
 			}
 		};
@@ -59,7 +61,6 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
 					ordinal = 0
 			)
 	)
-	
 	private void onDrawMinecraftVersion(GuiMainMenu gui, FontRenderer fontRenderer, String s, int x, int y, int color) {
 		drawString(fontRenderer, s, x, y - 10, color);
 		drawString(fontRenderer, I18n.format("riftmodlist.mods_loaded", RiftLoader.instance.getMods().size()), x, y, color);

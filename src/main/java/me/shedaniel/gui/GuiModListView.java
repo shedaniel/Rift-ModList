@@ -75,25 +75,30 @@ public class GuiModListView extends GuiScreen {
 		//Render info
 		String modName = mod.getName();
 		int j1 = fontRenderer.getStringWidth(modName);
-		if (j1 > 300)
-			modName = fontRenderer.trimStringToWidth(modName, 300 - 3) + "...";
+		if (j1 > this.width - 48 - 90)
+			modName = fontRenderer.trimStringToWidth(modName, this.width - 48 - 90 - 3) + "...";
 		this.fontRenderer.drawStringWithShadow(modName, 48, 11, 16777215);
 		String versions = I18n.format("riftmodlist.versions", mod.getVersions());
 		j1 = fontRenderer.getStringWidth(versions);
-		if (j1 > 300)
-			versions = fontRenderer.trimStringToWidth(versions, 300 - 3) + "...";
+		if (j1 > this.width - 48 - 90)
+			versions = fontRenderer.trimStringToWidth(versions, this.width - 48 - 90 - 3) + "...";
 		this.fontRenderer.drawStringWithShadow(versions, 48, 21, 8421504);
 		if (!mod.getUrl().equals("Unidentified")) {
 			String url = I18n.format("riftmodlist.url", mod.getUrl());
 			j1 = fontRenderer.getStringWidth(url);
-			if (j1 > 300)
-				url = fontRenderer.trimStringToWidth(url, 300 - 3) + "...";
+			if (j1 > this.width - 48 - 90)
+				url = fontRenderer.trimStringToWidth(url, this.width - 48 - 90 - 3) + "...";
 			this.fontRenderer.drawStringWithShadow(url, 48, 31, 8421504);
 		}
+		String id = I18n.format("riftmodlist.id", mod.getId());
+		j1 = fontRenderer.getStringWidth(id);
+		if (j1 > this.width - 48 * 2)
+			id = fontRenderer.trimStringToWidth(id, this.width - 48 * 2 - 3) + "...";
+		this.fontRenderer.drawStringWithShadow(id, 48, (float) (60), 8421504);
 		String description = mod.getDescription();
-		List<String> list = this.mc.fontRenderer.listFormattedStringToWidth(description, 400);
-		for (int i1 = 0; i1 < 2 && i1 < list.size(); ++i1)
-			this.fontRenderer.drawStringWithShadow(list.get(i1), 48, (float) (60 + 10 * i1), 16777215);
+		List<String> list = this.mc.fontRenderer.listFormattedStringToWidth(description, this.width - 48 * 2);
+		for (int i1 = 0; i1 < list.size(); ++i1)
+			this.fontRenderer.drawStringWithShadow(list.get(i1), 48, (float) (75 + 10 * i1), 16777215);
 		
 		super.render(mouseX, mouseY, partialTicks);
 	}
@@ -116,16 +121,12 @@ public class GuiModListView extends GuiScreen {
 	}
 	
 	@Override
-	public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_)
-	{
-		if (p_keyPressed_1_ == 256 && this.allowCloseWithEscape())
-		{
+	public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_) {
+		if (p_keyPressed_1_ == 256 && this.allowCloseWithEscape()) {
 			this.close();
 			this.mc.displayGuiScreen(RiftModList.guiModList);
 			return true;
-		}
-		else
-		{
+		} else {
 			return super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);
 		}
 	}
