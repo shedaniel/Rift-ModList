@@ -11,7 +11,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.realms.RealmsBridge;
 import org.dimdev.riftloader.RiftLoader;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -46,6 +45,9 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
 			public void onClick(double mouseX, double mouseY) {
 				if (RiftModList.guiModList == null)
 					RiftModList.guiModList = new GuiModList();
+				else
+					RiftModList.guiModList.getGuiModListContent().setCurrentIndex(-1);
+				RiftModList.guiModList.lastIndex = -1;
 				RiftModList.guiModList.setPreviousGui(Minecraft.getInstance().currentScreen);
 				mc.displayGuiScreen(RiftModList.guiModList);
 			}
@@ -66,8 +68,7 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
 		drawString(fontRenderer, I18n.format("riftmodlist.mods_loaded", RiftLoader.instance.getMods().size()), x, y, color);
 	}
 	
-	private void switchToRealms()
-	{
+	private void switchToRealms() {
 		RealmsBridge realmsbridge = new RealmsBridge();
 		realmsbridge.switchToRealms(this);
 	}

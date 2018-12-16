@@ -37,6 +37,14 @@ public class GuiModListContent extends GuiSlot {
 		searchFilter(searchTerm, true);
 	}
 	
+	public int getCurrentIndex() {
+		return currentIndex;
+	}
+	
+	public List<RiftMod> getModList() {
+		return modList;
+	}
+	
 	@Override
 	protected int getSize() {
 		return modList.size();
@@ -106,11 +114,17 @@ public class GuiModListContent extends GuiSlot {
 		if (p_mouseClicked_1_ > x && p_mouseClicked_1_ < x + 50 && p_mouseClicked_3_ > y + 6 && p_mouseClicked_3_ < y + 26) {
 			Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			Minecraft.getInstance().displayGuiScreen(new GuiModListView(modList.get(index)));
+			currentIndex = -1;
+			GuiModList.lastIndex = -1;
 		} else if (isMouseInList(p_mouseClicked_1_, p_mouseClicked_3_)) {
 			Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			currentIndex = index;
 		}
 		return super.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_);
+	}
+	
+	public void setCurrentIndex(int currentIndex) {
+		this.currentIndex = currentIndex;
 	}
 	
 	public void searchFilter(String searchTerm, boolean var2) {

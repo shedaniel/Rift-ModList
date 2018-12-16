@@ -22,6 +22,9 @@ public class MixinGuiIngameMenu extends GuiScreen {
 			public void onClick(double mouseX, double mouseY) {
 				if (RiftModList.guiModList == null)
 					RiftModList.guiModList = new GuiModList();
+				else
+					RiftModList.guiModList.getGuiModListContent().setCurrentIndex(-1);
+				RiftModList.guiModList.lastIndex = -1;
 				RiftModList.guiModList.setPreviousGui(Minecraft.getInstance().currentScreen);
 				mc.displayGuiScreen(RiftModList.guiModList);
 			}
