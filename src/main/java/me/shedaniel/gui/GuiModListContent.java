@@ -9,9 +9,10 @@ import net.minecraft.client.gui.GuiSlot;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.SoundEvents;
+import org.dimdev.riftloader.ModInfo;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Supplier;
 
 public class GuiModListContent extends GuiSlot {
 	
@@ -20,7 +21,7 @@ public class GuiModListContent extends GuiSlot {
 	private FontRenderer fontRenderer;
 	private int currentIndex = -1;
 	
-	public GuiModListContent(GuiModList parent, List<RiftMod> modList) {
+	public GuiModListContent(GuiModList parent, String searchTerm) {
 		super(
 				parent.getMinecraftInstance(),
 				parent.width,
@@ -30,9 +31,18 @@ public class GuiModListContent extends GuiSlot {
 				40
 		);
 		this.parent = parent;
-		this.modList = modList;
+		this.modList = new ArrayList<>();
 		this.fontRenderer = mc.fontRenderer;
 		setShowSelectionBox(true);
+		searchFilter(searchTerm, true);
+	}
+	
+	public int getCurrentIndex() {
+		return currentIndex;
+	}
+	
+	public List<RiftMod> getModList() {
+		return modList;
 	}
 	
 	@Override
@@ -104,10 +114,29 @@ public class GuiModListContent extends GuiSlot {
 		if (p_mouseClicked_1_ > x && p_mouseClicked_1_ < x + 50 && p_mouseClicked_3_ > y + 6 && p_mouseClicked_3_ < y + 26) {
 			Minecraft.getInstance().getSoundHandler().play(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			Minecraft.getInstance().displayGuiScreen(new GuiModListView(modList.get(index)));
+			currentIndex = -1;
+			GuiModList.lastIndex = -1;
 		} else if (p_mouseClicked_3_ > 40 && p_mouseClicked_3_ < parent.height - 40) {
 			Minecraft.getInstance().getSoundHandler().play(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			currentIndex = index;
 		}
 		return super.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_);
 	}
+	
+	public void setCurrentIndex(int currentIndex) {
+		this.currentIndex = currentIndex;
+	}
+	
+	public void searchFilter(String searchTerm, boolean var2) {
+		this.focusNext();
+		List<RiftMod> modList = new LinkedList<>(GuiModList.modList);
+		if (modList == null || var2) {
+			modList = new ArrayList<>();
+			GuiModList.regenerateMods();
+			modList.addAll(GuiModList.modList);
+			modList.sort(Comparator.comparing(riftMod -> riftMod.getName()));
+		}
+		this.modList = modList;
+	}
+	
 }

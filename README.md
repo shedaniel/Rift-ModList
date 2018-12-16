@@ -41,4 +41,14 @@ To add a icon for your mod. As the mod simply uses the `pack.png` file. To use a
   "icon_file": "custom_icon.png"
 }
 ```
-Then the mod will load from `custom_icon.png`. Please make the icon resolution as 128x128.
+Then the mod will load from `custom_icon.png`. Please make the icon resolution as 128x128.<br><br>
+To enable the config button on your mod:<br>
+Create a static method somewhere like this:
+```java
+public static void randomMethod() {
+  //Open your idk gui for config
+}
+```
+Then add `configure_gui` to your `riftmod.json`. The value should be `random.package.YourClass$randomMethod`. I know this is ugly but deal with it now, I might change in the future.
+
+I would love to receive Pull Requests :)

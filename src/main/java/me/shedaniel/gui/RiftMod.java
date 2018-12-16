@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.util.ResourceLocation;
@@ -12,6 +13,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -24,6 +26,7 @@ public class RiftMod {
 	private List<String> authors;
 	private String id, name, versions, url, description;
 	private ResourceLocation resourceLocation;
+	private Method configMethod;
 	
 	public RiftMod(String id, File file) {
 		this(id, id, file, false);
@@ -37,6 +40,7 @@ public class RiftMod {
 		this.description = "A mod for Rift.";
 		this.authors = new ArrayList<>();
 		this.nativeImage = null;
+		this.configMethod = null;
 		if (loadIcon)
 			tryLoadPackIcon(file, "pack.png");
 	}
@@ -52,6 +56,25 @@ public class RiftMod {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public Method getConfigMethod() {
+		return configMethod;
+	}
+	
+	public boolean runConfigMethod() {
+		if (configMethod == null)
+			return false;
+		try {
+			configMethod.invoke(null);
+			return true;
+		} catch (Exception e) {
+		}
+		return false;
+	}
+	
+	public boolean hasConfigMethod() {
+		return configMethod != null;
 	}
 	
 	public String getDescription() {
@@ -98,6 +121,10 @@ public class RiftMod {
 		return authors;
 	}
 	
+	public void setConfigMethod(Method configMethod) {
+		this.configMethod = configMethod;
+	}
+	
 	public ResourceLocation getModIcon() {
 		if (this.resourceLocation == null) {
 			if (this.nativeImage == null)
@@ -132,6 +159,39 @@ public class RiftMod {
 			e.printStackTrace();
 		}
 		return defaultAnswer;
+	}
+	
+	public static Method loadMethodFromJar(File file, String value) {
+		if (!file.isFile()) return null;
+		try (JarFile jar = new JarFile(file)) {
+			JarEntry entry = jar.getJarEntry("riftmod.json");
+			if (entry != null) {
+				InputStream inputStream = jar.getInputStream(entry);
+				JsonElement element = new JsonParser().parse(new InputStreamReader(inputStream));
+				JsonObject object = element.getAsJsonObject();
+				if (object.has(value)) {
+					String methodString = object.get(value).getAsString();
+					return loadMethodFromString(methodString);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static Method loadMethodFromString(String methodString) {
+		Exception e = null;
+		try {
+			String className = methodString.split("\\$")[0], methodName = methodString.split("\\$")[1];
+			Class cls = Class.forName(className);
+			Method method = cls.getDeclaredMethod(methodName);
+			return method;
+		} catch (Exception ex) {
+			e = ex;
+		}
+		e.printStackTrace();
+		return null;
 	}
 	
 }

@@ -8,5 +8,11 @@
   "riftmodlist.view": "View",
   "riftmodlist.versions": "Versions: %s",
   "riftmodlist.url": "Website: %s",
-  "riftmodlist.visit_website": "Visit Website"
+  "riftmodlist.visit_website": "Visit Website",
+  "riftmodlist.done": "Done",
+  "riftmodlist.id": "Mod ID: %s",
+  "riftmodlist.rift.description": "Rift is a lightweight modding API, library, and mod loader for Minecraft 1.13. The main objective of Rift is to make a more modular and lightweight modding API for Minecraft. Rift is not intended to compete with or replace Forge, but rather Rift and a set of optional community-made library mods is.",
+  "riftmodlist.optifine.description": "OptiFine is a Minecraft optimization mod.\nIt allows Minecraft to run faster and look better with full support for HD textures and many configuration options.",
+  "riftmodlist.cannot_config": "Can't Access Config",
+  "riftmodlist.config": "Configure"
 }
