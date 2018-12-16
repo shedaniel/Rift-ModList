@@ -77,7 +77,7 @@ public class GuiModList extends GuiScreen {
 			}
 		});
 		this.guiModListContent = new GuiModListContent(this, "");
-		this.children.add(guiModListContent);
+		this.eventListeners.add(guiModListContent);
 		this.setFocused(guiModListContent);
 		/*
 		this.searchBox = new GuiTextField(103, this.fontRenderer, this.width / 2 - 100, 22, 200, 20, this.searchBox) {
