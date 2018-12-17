@@ -4,6 +4,7 @@ import me.shedaniel.RiftModList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 import org.dimdev.riftloader.ModInfo;
 import org.dimdev.riftloader.RiftLoader;
@@ -20,7 +21,7 @@ public class GuiModList extends GuiScreen {
 	
 	@Nullable
 	private GuiModListContent guiModListContent;
-	//protected GuiTextField searchBox;
+	private GuiTextField searchBox;
 	protected GuiScreen previousGui;
 	private GuiButton configButton;
 	
@@ -43,19 +44,16 @@ public class GuiModList extends GuiScreen {
 			RiftMod mod = new RiftMod(modInfo.id, modInfo.name, modInfo.source, false);
 			mod.setAuthors(modInfo.authors);
 			mod.setVersions(mod.loadValueFromJar(modInfo.source, "version"));
-			mod.setUrl(mod.loadValueFromJar(modInfo.source, "url"));
-			mod.setDescription(mod.loadValueFromJar(modInfo.source, "description", "A mod for Rift."));
-			mod.setConfigMethod(mod.loadMethodFromJar(modInfo.source, "configure_gui"));
-			if (modInfo.id.equals("optifine")) {
-				mod.setUrl("https://www.optifine.net");
-				mod.setDescription(I18n.format("riftmodlist.optifine.description"));
-				mod.setConfigMethod(mod.loadMethodFromString("me.shedaniel.gui.GuiModList$openOptifineConfig"));
-				
-			} else if (modInfo.id.equals("rift")) {
-				mod.setUrl("https://minecraft.curseforge.com/projects/rift");
-				mod.setDescription(I18n.format("riftmodlist.rift.description"));
+			mod.setUrl(mod.loadValueFromJar(modInfo.source, "url", (modInfo.id.equals("optifine") ? "https://www.optifine.net" : modInfo.id.equals("rift") ?
+					"https://minecraft.curseforge.com/projects/rift" : "Unidentified")));
+			mod.setDescription(mod.loadValueFromJar(modInfo.source, "description",
+					(modInfo.id.equals("optifine") ? I18n.format("riftmodlist.optifine.description") : modInfo.id.equals("rift") ?
+							I18n.format("riftmodlist.rift.description") : "A mod for Rift.")));
+			mod.setConfigMethod(mod.loadMethodFromJar(modInfo.source, "configure_gui", (modInfo.id.equals("optifine") ?
+					mod.loadMethodFromString("me.shedaniel.gui.GuiModList$openOptifineConfig", null) : null)));
+			if (!mod.tryLoadPackIcon(modInfo.source, mod.loadValueFromJar(modInfo.source, "icon_file", "pack.png")) && modInfo.id.equals("rift")) {
+				mod.setResourceLocation(new ResourceLocation("riftmodlist:textures/gui/rift_pack.png"));
 			}
-			mod.tryLoadPackIcon(modInfo.source, mod.loadValueFromJar(modInfo.source, "icon_file", "pack.png"));
 			modList.add(mod);
 		}
 		Collections.sort(modList, (riftMod, anotherMod) -> {
@@ -77,24 +75,17 @@ public class GuiModList extends GuiScreen {
 			}
 		});
 		this.guiModListContent = new GuiModListContent(this, "");
-		this.children.add(guiModListContent);
-		this.setFocused(guiModListContent);
-		/*
-		this.searchBox = new GuiTextField(103, this.fontRenderer, this.width / 2 - 100, 22, 200, 20, this.searchBox) {
+		
+		this.searchBox = new GuiTextField(103, this.fontRenderer, this.width / 2 - 100, 32, 200, 20, this.searchBox) {
 			@Override
-			public void focusChanged(boolean var1) {
-				super.focusChanged(true);
-			}
-			
-			@Override
-			public boolean charTyped(char p_charTyped_1_, int p_charTyped_2_) {
-				guiModListContent.searchFilter(searchBox.getText(), true);
-				return super.charTyped(p_charTyped_1_, p_charTyped_2_);
+			public void setFocused(boolean var1) {
+				super.setFocused(true);
 			}
 		};
-		this.children.add(searchBox);
-		this.searchBox.setEnableBackgroundDrawing(true);
-		this.searchBox.setCanLoseFocus(false);*/
+		this.searchBox.setTextAcceptHandler((p_212350_1_, p_212350_2_) ->
+		{
+			this.guiModListContent.searchFilter(p_212350_2_);
+		});
 		addButton(new GuiButton(104, this.width / 2 - 3, this.height - 30, 93, 20, I18n.format("riftmodlist.done")) {
 			@Override
 			public void onClick(double var1, double var3) {
@@ -114,13 +105,35 @@ public class GuiModList extends GuiScreen {
 				}
 			}
 		});
+		this.children.add(searchBox);
+		this.children.add(guiModListContent);
+		this.searchBox.setFocused(true);
+		this.searchBox.setCanLoseFocus(false);
+	}
+	
+	@Override
+	public boolean mouseScrolled(double p_mouseScrolled_1_) {
+		return this.guiModListContent.mouseScrolled(p_mouseScrolled_1_);
+	}
+	
+	@Override
+	public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_) {
+		return super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_) ? true : this.searchBox.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);
+	}
+	
+	@Override
+	public boolean charTyped(char p_charTyped_1_, int p_charTyped_2_) {
+		return this.searchBox.charTyped(p_charTyped_1_, p_charTyped_2_);
 	}
 	
 	public static int lastIndex = -1;
 	
+	private String searchBoxSuggestion = I18n.format("riftmodlist.search_mods");
+	
 	@Override
 	public void tick() {
-		//searchBox.tick();
+		this.searchBox.tick();
+		this.searchBox.setSuggestion(searchBox.getText().equals("") ? searchBoxSuggestion : null);
 		try {
 			if (guiModListContent.getCurrentIndex() == -1) {
 				configButton.enabled = false;
@@ -138,9 +151,9 @@ public class GuiModList extends GuiScreen {
 	
 	@Override
 	public void render(int mouseX, int mouseY, float partialTicks) {
-		//searchBox.drawTextField(mouseX, mouseY, partialTicks);
 		this.guiModListContent.drawScreen(mouseX, mouseY, partialTicks);
-		this.drawCenteredString(this.fontRenderer, I18n.format("riftmodlist.mods"), this.width / 2, this.height / 16, 16777215);
+		this.searchBox.drawTextField(mouseX, mouseY, partialTicks);
+		this.drawCenteredString(this.fontRenderer, I18n.format("riftmodlist.mods"), this.width / 2, 16, 16777215);
 		super.render(mouseX, mouseY, partialTicks);
 	}
 	

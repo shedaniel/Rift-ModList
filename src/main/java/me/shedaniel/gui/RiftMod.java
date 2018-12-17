@@ -45,17 +45,19 @@ public class RiftMod {
 			tryLoadPackIcon(file, "pack.png");
 	}
 	
-	public void tryLoadPackIcon(File file, String iconFile) {
-		if (!file.isFile()) return;
+	public boolean tryLoadPackIcon(File file, String iconFile) {
+		if (!file.isFile()) return false;
 		try (JarFile jar = new JarFile(file)) {
 			JarEntry entry = jar.getJarEntry(iconFile);
 			if (entry != null) {
 				InputStream inputStream = jar.getInputStream(entry);
 				this.nativeImage = NativeImage.read(inputStream);
+				return true;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return false;
 	}
 	
 	public Method getConfigMethod() {
@@ -125,6 +127,10 @@ public class RiftMod {
 		this.configMethod = configMethod;
 	}
 	
+	public void setResourceLocation(ResourceLocation resourceLocation) {
+		this.resourceLocation = resourceLocation;
+	}
+	
 	public ResourceLocation getModIcon() {
 		if (this.resourceLocation == null) {
 			if (this.nativeImage == null)
@@ -161,8 +167,8 @@ public class RiftMod {
 		return defaultAnswer;
 	}
 	
-	public static Method loadMethodFromJar(File file, String value) {
-		if (!file.isFile()) return null;
+	public static Method loadMethodFromJar(File file, String value, Method defaultMethod) {
+		if (!file.isFile()) return defaultMethod;
 		try (JarFile jar = new JarFile(file)) {
 			JarEntry entry = jar.getJarEntry("riftmod.json");
 			if (entry != null) {
@@ -171,16 +177,16 @@ public class RiftMod {
 				JsonObject object = element.getAsJsonObject();
 				if (object.has(value)) {
 					String methodString = object.get(value).getAsString();
-					return loadMethodFromString(methodString);
+					return loadMethodFromString(methodString, defaultMethod);
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		return defaultMethod;
 	}
 	
-	public static Method loadMethodFromString(String methodString) {
+	public static Method loadMethodFromString(String methodString, Method defaultMethod) {
 		Exception e = null;
 		try {
 			String className = methodString.split("\\$")[0], methodName = methodString.split("\\$")[1];
@@ -191,7 +197,7 @@ public class RiftMod {
 			e = ex;
 		}
 		e.printStackTrace();
-		return null;
+		return defaultMethod;
 	}
 	
 }
