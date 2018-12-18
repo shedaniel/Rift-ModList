@@ -71,6 +71,7 @@ public class RiftMod {
 			configMethod.invoke(null);
 			return true;
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return false;
 	}
@@ -136,7 +137,7 @@ public class RiftMod {
 			if (this.nativeImage == null)
 				this.resourceLocation = new ResourceLocation("textures/misc/unknown_pack.png");
 			else
-				this.resourceLocation = Minecraft.getInstance().getTextureManager().getDynamicTextureLocation("texturepackicon", new DynamicTexture(this.nativeImage));
+				this.resourceLocation = Minecraft.getInstance().getTextureManager().getDynamicTextureLocation("modpackicon", new DynamicTexture(this.nativeImage));
 		}
 		return resourceLocation;
 	}

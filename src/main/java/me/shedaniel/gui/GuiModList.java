@@ -1,6 +1,7 @@
 package me.shedaniel.gui;
 
 import me.shedaniel.RiftModList;
+import me.shedaniel.utils.ConfigValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.resources.I18n;
@@ -10,9 +11,7 @@ import org.dimdev.riftloader.ModInfo;
 import org.dimdev.riftloader.RiftLoader;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class GuiModList extends GuiScreen {
 	
@@ -38,6 +37,21 @@ public class GuiModList extends GuiScreen {
 		Minecraft.getInstance().displayGuiScreen(new GuiVideoSettings(Minecraft.getInstance().currentScreen, Minecraft.getInstance().gameSettings));
 	}
 	
+	public static void openTestConfig() {
+		Map<String, ConfigValue> map = new HashMap<>();
+		map.put("general", ConfigValue.createConfigValue("General", "Name", ""));
+		map.put("general", ConfigValue.createConfigValue("General", "Idk Ah", ""));
+		map.put("developer", ConfigValue.createConfigValue("Developer", "Just input here", ""));
+		Minecraft.getInstance().displayGuiScreen(getConfigScreen(RiftModList.guiModList, map, getModByID("riftmodlist")));
+	}
+	
+	public static RiftMod getModByID(String id) {
+		for (RiftMod mod : modList)
+			if (mod.getId().equals(id))
+				return mod;
+		return null;
+	}
+	
 	public static void regenerateMods() {
 		modList = new ArrayList<>();
 		for (ModInfo modInfo : RiftLoader.instance.getMods()) {
@@ -54,6 +68,8 @@ public class GuiModList extends GuiScreen {
 			if (!mod.tryLoadPackIcon(modInfo.source, mod.loadValueFromJar(modInfo.source, "icon_file", "pack.png")) && modInfo.id.equals("rift")) {
 				mod.setResourceLocation(new ResourceLocation("riftmodlist:textures/gui/rift_pack.png"));
 			}
+			if (modInfo.id.equals("riftmodlist"))
+				mod.setConfigMethod(mod.loadMethodFromString("me.shedaniel.gui.GuiModList$openTestConfig", null));
 			modList.add(mod);
 		}
 		Collections.sort(modList, (riftMod, anotherMod) -> {
@@ -111,6 +127,14 @@ public class GuiModList extends GuiScreen {
 		this.searchBox.setCanLoseFocus(false);
 	}
 	
+	public void reloadSearch() {
+		try {
+			this.searchBox.setText("");
+			this.guiModListContent.searchFilter("");
+		} catch (Exception e) {
+		}
+	}
+	
 	@Override
 	public boolean mouseScrolled(double p_mouseScrolled_1_) {
 		return this.guiModListContent.mouseScrolled(p_mouseScrolled_1_);
@@ -149,6 +173,14 @@ public class GuiModList extends GuiScreen {
 		}
 	}
 	
+	private String getSearchBoxText() {
+		try {
+			return this.searchBox.getText();
+		} catch (Exception e) {
+		}
+		return "";
+	}
+	
 	@Override
 	public void render(int mouseX, int mouseY, float partialTicks) {
 		this.guiModListContent.drawScreen(mouseX, mouseY, partialTicks);
@@ -168,6 +200,26 @@ public class GuiModList extends GuiScreen {
 	@Nullable
 	public GuiModListContent getGuiModListContent() {
 		return guiModListContent;
+	}
+	
+	/*
+	Need to fix this
+	 */
+	public static GuiConfigScreen getConfigScreen(GuiScreen parent, Map<String, ConfigValue> map, RiftMod mod) {
+		GuiConfigScreen configScreen = new GuiConfigScreen(parent, mod, RiftModList.guiModList.width, RiftModList.guiModList.height);
+		for (Map.Entry<String, ConfigValue> entry : map.entrySet()) {
+			GuiConfigCategory category = configScreen.getCategories().containsKey(entry.getKey().toLowerCase()) ? configScreen.getCategories().get(entry.getKey().toLowerCase()) : new GuiConfigCategory(entry.getValue().getCategory(), configScreen);
+			category.getConfigValues().add(entry.getValue());
+			if (!configScreen.getCategories().containsKey(entry.getKey().toLowerCase()))
+				configScreen.addListener(category);
+			if (configScreen.getCategories().containsKey(entry.getKey().toLowerCase()))
+				configScreen.getCategories().remove(entry.getKey().toLowerCase());
+			configScreen.getCategories().put(entry.getKey().toLowerCase(), category);
+		}
+		for (Map.Entry<String, GuiConfigCategory> entry : configScreen.getCategories().entrySet()) {
+			entry.getValue().initComponents();
+		}
+		return configScreen;
 	}
 	
 }

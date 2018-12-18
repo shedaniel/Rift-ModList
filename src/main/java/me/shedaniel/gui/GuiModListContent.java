@@ -38,6 +38,11 @@ public class GuiModListContent extends GuiSlot {
 		searchFilter(searchTerm);
 	}
 	
+	@Override
+	public int getListWidth() {
+		return this.width - 48 * 2;
+	}
+	
 	public int getCurrentIndex() {
 		return currentIndex;
 	}
@@ -122,6 +127,11 @@ public class GuiModListContent extends GuiSlot {
 			currentIndex = index;
 		}
 		return super.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_);
+	}
+	
+	@Override
+	protected int getScrollBarX() {
+		return this.width - 46;
 	}
 	
 	public void setCurrentIndex(int currentIndex) {
