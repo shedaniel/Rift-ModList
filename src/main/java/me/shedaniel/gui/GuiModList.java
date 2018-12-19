@@ -38,11 +38,11 @@ public class GuiModList extends GuiScreen {
 	}
 	
 	public static void openTestConfig() {
-		Map<String, ConfigValue> map = new HashMap<>();
-		map.put("general", ConfigValue.createConfigValue("General", "Name", ""));
-		map.put("general", ConfigValue.createConfigValue("General", "Idk Ah", ""));
-		map.put("developer", ConfigValue.createConfigValue("Developer", "Just input here", ""));
-		Minecraft.getInstance().displayGuiScreen(getConfigScreen(RiftModList.guiModList, map, getModByID("riftmodlist")));
+		List<ConfigValue> list = new ArrayList<>();
+		list.add(ConfigValue.createConfigValue("General", "Name", ""));
+		list.add(ConfigValue.createConfigValue("General", "Idk Ah", ""));
+		list.add(ConfigValue.createConfigValue("Developer", "Just input here", ""));
+		Minecraft.getInstance().displayGuiScreen(getConfigScreen(RiftModList.guiModList, list, getModByID("riftmodlist")));
 	}
 	
 	public static RiftMod getModByID(String id) {
@@ -205,19 +205,25 @@ public class GuiModList extends GuiScreen {
 	/*
 	Need to fix this
 	 */
-	public static GuiConfigScreen getConfigScreen(GuiScreen parent, Map<String, ConfigValue> map, RiftMod mod) {
+	public static GuiConfigScreen getConfigScreen(GuiScreen parent, List<ConfigValue> values, RiftMod mod) {
 		GuiConfigScreen configScreen = new GuiConfigScreen(parent, mod, RiftModList.guiModList.width, RiftModList.guiModList.height);
-		for (Map.Entry<String, ConfigValue> entry : map.entrySet()) {
-			GuiConfigCategory category = configScreen.getCategories().containsKey(entry.getKey().toLowerCase()) ? configScreen.getCategories().get(entry.getKey().toLowerCase()) : new GuiConfigCategory(entry.getValue().getCategory(), configScreen);
-			category.getConfigValues().add(entry.getValue());
-			if (!configScreen.getCategories().containsKey(entry.getKey().toLowerCase()))
-				configScreen.addListener(category);
-			if (configScreen.getCategories().containsKey(entry.getKey().toLowerCase()))
-				configScreen.getCategories().remove(entry.getKey().toLowerCase());
-			configScreen.getCategories().put(entry.getKey().toLowerCase(), category);
+		Map<String, GuiConfigCategory> categoryMap = new HashMap<>();
+		for (ConfigValue value : values) {
+			String categoryName = value.getCategory();
+			if (!categoryMap.containsKey(categoryName.toLowerCase())) {
+				GuiConfigCategory category = new GuiConfigCategory(categoryName, configScreen);
+				category.getConfigValues().add(value);
+				categoryMap.put(categoryName.toLowerCase(), category);
+			} else {
+				GuiConfigCategory category = categoryMap.get(categoryName.toLowerCase());
+				category.getConfigValues().add(value);
+				categoryMap.put(categoryName.toLowerCase(), category);
+			}
 		}
-		for (Map.Entry<String, GuiConfigCategory> entry : configScreen.getCategories().entrySet()) {
+		for (Map.Entry<String, GuiConfigCategory> entry : categoryMap.entrySet()) {
 			entry.getValue().initComponents();
+			configScreen.getCategories().put(entry.getKey(), entry.getValue());
+			configScreen.getChildren().add(entry.getValue());
 		}
 		return configScreen;
 	}

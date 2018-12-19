@@ -13,6 +13,7 @@ import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class GuiConfigCategory extends GuiEventHandler {
 	
@@ -48,7 +49,7 @@ public class GuiConfigCategory extends GuiEventHandler {
 	
 	@Override
 	protected List<IGuiEventListener> getChildren() {
-		return new ArrayList<>();
+		return listeners;
 	}
 	
 	public int getSize() {
@@ -60,15 +61,12 @@ public class GuiConfigCategory extends GuiEventHandler {
 	public void initComponents() {
 		for (int i = 0; i < configValues.size(); i++) {
 			ConfigValue value = configValues.get(i);
-			System.out.println(value.getType().name());
 			if (value.getType().equals(ConfigValue.ValueType.STRING)) {
 				GuiConfigTextField textField = null;
 				listeners.add(textField = new GuiConfigTextField(1000 + i, Minecraft.getInstance().fontRenderer, Minecraft.getInstance().fontRenderer.getStringWidth(value.getName() + ": ") + 16,
 						0, 200, 16, textField));
-				this.getChildren().add(textField);
 			}
 		}
-		System.out.println(configValues.size() + "." + listeners.size());
 	}
 	
 	public void drawCategory(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn, float partialTicks) {
@@ -105,7 +103,7 @@ public class GuiConfigCategory extends GuiEventHandler {
 			ConfigValue value = configValues.get(i);
 			IGuiEventListener listener = listeners.get(i);
 			if (value.getType().equals(ConfigValue.ValueType.STRING) && listener instanceof GuiConfigTextField) {
-				this.drawString(Minecraft.getInstance().fontRenderer, value.getName() + ":", 10, yPos + 28 + i * 24, 16777120);
+				this.drawString(Minecraft.getInstance().fontRenderer, value.getName() + ":", 10, yPos + 28 + i * 24, 14737632);
 				((GuiConfigTextField) listener).setPosY(yPos + 28 + i * 24 - 4);
 				((GuiConfigTextField) listener).drawTextField(mouseXIn, mouseXIn, partialTicks);
 			}
@@ -122,25 +120,22 @@ public class GuiConfigCategory extends GuiEventHandler {
 			Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			return true;
 		}
-		for (IGuiEventListener listener : listeners)
-			if (listener.mouseClicked(mouseX, mouseY, p_mouseClicked_5_))
-				return true;
-		return false;
+		return super.mouseClicked(mouseX, mouseY, p_mouseClicked_5_);
 	}
 	
 	@Override
-	public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_) {
-		for (IGuiEventListener listener : listeners)
-			if (listener.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_))
-				return true;
-		return false;
-	}
-	
-	@Override
-	public boolean charTyped(char p_charTyped_1_, int p_charTyped_2_) {
-		for (IGuiEventListener listener : listeners)
-			if (listener.charTyped(p_charTyped_1_, p_charTyped_2_))
-				return true;
-		return false;
+	public void focusChanged(boolean focused) {
+		if (focused) {
+			for (Map.Entry<String, GuiConfigCategory> entry : gui.getCategories().entrySet()) {
+				if (!entry.getValue().equals(this)) {
+					entry.getValue().setFocused(null);
+					for (IGuiEventListener listener : entry.getValue().getChildren())
+						listener.focusChanged(false);
+				}
+			}
+		} else {
+			for (IGuiEventListener listener : this.getChildren())
+				listener.focusChanged(false);
+		}
 	}
 }

@@ -1,7 +1,9 @@
 package me.shedaniel.gui;
 
+import com.google.common.collect.Lists;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -9,6 +11,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GuiConfigScreen extends GuiScreen {
@@ -20,6 +23,7 @@ public class GuiConfigScreen extends GuiScreen {
 	protected int initialClickY = -2;
 	private boolean clickedScrollbar;
 	private RiftMod mod;
+	private List<IGuiEventListener> children = Lists.<IGuiEventListener>newArrayList();
 	
 	public GuiConfigScreen(GuiScreen parent, RiftMod mod, int width, int height) {
 		this.parent = parent;
@@ -56,6 +60,11 @@ public class GuiConfigScreen extends GuiScreen {
 	
 	public void addListener(GuiConfigCategory gui) {
 		this.children.add(gui);
+	}
+	
+	@Override
+	public List<IGuiEventListener> getChildren() {
+		return this.children;
 	}
 	
 	protected int getContentHeight() {
@@ -220,27 +229,22 @@ public class GuiConfigScreen extends GuiScreen {
 			
 			if (i == -1 && p_mouseClicked_5_ == 0) {
 				return true;
-			} else if (i != -1 && this.mouseClicked(i, p_mouseClicked_5_, p_mouseClicked_1_, p_mouseClicked_3_)) {
-				int j = 0;
-				for (Map.Entry<String, GuiConfigCategory> entry : getCategories().entrySet()) {
-					if (i == j) {
-						entry.getValue().mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_);
-						break;
-					}
-					j++;
-				}
-				this.setDragging(true);
-				return true;
-			} else {
+			} else if (i == -1) {
 				return this.clickedScrollbar;
 			}
-		} else {
-			return false;
 		}
-	}
-	
-	protected boolean mouseClicked(int index, int button, double mouseX, double mouseY) {
-		return true;
+		
+		for (IGuiEventListener iguieventlistener : this.children) {
+			boolean flag = iguieventlistener.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_);
+			if (flag) {
+				this.focusOn(iguieventlistener);
+				if (p_mouseClicked_5_ == 0)
+					this.setDragging(true);
+				
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	@Override
@@ -268,22 +272,19 @@ public class GuiConfigScreen extends GuiScreen {
 			} else {
 				double d0 = (double) this.getMaxScroll();
 				
-				if (d0 < 1.0D) {
+				if (d0 < 1.0D)
 					d0 = 1.0D;
-				}
 				
 				int i = (int) ((float) ((this.width - this.top) * (this.width - this.top)) / (float) this.getContentHeight());
 				i = MathHelper.clamp(i, 32, this.width - this.top - 8);
 				double d1 = d0 / (double) (this.width - this.top - i);
 				
-				if (d1 < 1.0D) {
+				if (d1 < 1.0D)
 					d1 = 1.0D;
-				}
 				
 				this.amountScrolled += p_mouseDragged_8_ * d1;
 				this.bindAmountScrolled();
 			}
-			
 			return true;
 		}
 		return false;
@@ -293,15 +294,6 @@ public class GuiConfigScreen extends GuiScreen {
 	public boolean mouseScrolled(double p_mouseScrolled_1_) {
 		this.amountScrolled -= p_mouseScrolled_1_ * 20;
 		return true;
-	}
-	
-	@Override
-	public boolean charTyped(char p_charTyped_1_, int p_charTyped_2_) {
-		for (Map.Entry<String, GuiConfigCategory> entry : getCategories().entrySet()) {
-			if (entry.getValue().charTyped(p_charTyped_1_, p_charTyped_2_))
-				return true;
-		}
-		return super.charTyped(p_charTyped_1_, p_charTyped_2_);
 	}
 	
 	public int getEntryAt(double x, double y) {
@@ -343,10 +335,6 @@ public class GuiConfigScreen extends GuiScreen {
 			this.mc.displayGuiScreen(parent);
 			return true;
 		} else {
-			for (Map.Entry<String, GuiConfigCategory> entry : getCategories().entrySet()) {
-				if (entry.getValue().keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_))
-					return true;
-			}
 			return super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);
 		}
 	}
