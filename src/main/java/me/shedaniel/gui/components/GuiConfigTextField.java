@@ -730,7 +730,6 @@ public class GuiConfigTextField extends Gui implements IGuiEventListener {
 	
 	@Override
 	public boolean charTyped(char p_charTyped_1_, int p_charTyped_2_) {
-		System.out.println(this.cursorPosition);
 		if (this.getVisible() && this.isFocused()) {
 			if (isAllowedCharacter(p_charTyped_1_)) {
 				if (this.isEnabled)

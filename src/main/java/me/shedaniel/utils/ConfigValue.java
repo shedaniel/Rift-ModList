@@ -35,4 +35,17 @@ public class ConfigValue {
 		return new ConfigValue(name, category, type, value);
 	}
 	
+	public ConfigValue clone() {
+		return new ConfigValue(name, category, type, object);
+	}
+	
+	public ConfigValue setObject(Object object) {
+		this.object = object;
+		return this;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("ConfigValue[%s] in %s, type = %s, object = %s", getName(), getCategory(), getType().name(), String.valueOf(getObject()));
+	}
 }

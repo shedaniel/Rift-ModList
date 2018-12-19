@@ -1,15 +1,18 @@
 package me.shedaniel.gui;
 
 import com.google.common.collect.Lists;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.IGuiEventListener;
+import me.shedaniel.gui.components.GuiConfigTextField;
+import me.shedaniel.listener.OpenModConfigListener;
+import me.shedaniel.utils.ConfigValue;
+import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.MathHelper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,21 +27,55 @@ public class GuiConfigScreen extends GuiScreen {
 	private boolean clickedScrollbar;
 	private RiftMod mod;
 	private List<IGuiEventListener> children = Lists.<IGuiEventListener>newArrayList();
+	private OpenModConfigListener listener;
+	private GuiButton saveButton;
 	
-	public GuiConfigScreen(GuiScreen parent, RiftMod mod, int width, int height) {
+	public GuiConfigScreen(OpenModConfigListener listener, GuiScreen parent, RiftMod mod, int width, int height) {
 		this.parent = parent;
 		this.mod = mod;
 		this.width = width;
 		this.height = height;
 		this.top = 52;
 		this.categories = new HashMap<>();
+		this.listener = listener;
+	}
+	
+	@Override
+	protected void initGui() {
+		addButton(saveButton = new GuiButton(602, this.width - 80, 20, 70, 20, I18n.format("riftmodlist.config_done")) {
+			@Override
+			public void onClick(double mouseX, double mouseY) {
+				try {
+					saveAll();
+					close();
+					mc.displayGuiScreen(parent);
+				} catch (Exception e) {
+					mc.displayGuiScreen(new GuiDirtMessageScreen("Can't save config.") {
+						@Override
+						public boolean allowCloseWithEscape() {
+							return true;
+						}
+					});
+				}
+			}
+		});
+	}
+	
+	private void saveAll() {
+		List<ConfigValue> values = new ArrayList<>();
+		getCategories().forEach((categoryRegistryName, guiConfigCategory) -> {
+			guiConfigCategory.getListeners().forEach((configValue, eventListener) -> {
+				if (eventListener instanceof GuiConfigTextField)
+					values.add(configValue.clone().setObject(((GuiConfigTextField) eventListener).getText()));
+			});
+		});
+		this.listener.onSave(values);
 	}
 	
 	@Override
 	public void tick() {
 		for (Map.Entry<String, GuiConfigCategory> entry : getCategories().entrySet()) {
 			entry.getValue().setWidth(this.width);
-			entry.getValue().tick();
 		}
 	}
 	
@@ -187,6 +224,7 @@ public class GuiConfigScreen extends GuiScreen {
 		GlStateManager.shadeModel(7424);
 		GlStateManager.enableAlphaTest();
 		GlStateManager.disableBlend();
+		super.render(mouseX, mouseY, partialTicks);
 	}
 	
 	public int getSize() {
@@ -222,16 +260,15 @@ public class GuiConfigScreen extends GuiScreen {
 	
 	@Override
 	public boolean mouseClicked(double p_mouseClicked_1_, double p_mouseClicked_3_, int p_mouseClicked_5_) {
+		if (p_mouseClicked_1_ > saveButton.x && p_mouseClicked_1_ < saveButton.x + saveButton.getWidth() && p_mouseClicked_3_ > saveButton.y && p_mouseClicked_3_ < saveButton.y + 20)
+			saveButton.onClick(p_mouseClicked_1_, p_mouseClicked_3_);
 		this.checkScrollbarClick(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_);
 		
 		if (this.isMouseInList(p_mouseClicked_1_, p_mouseClicked_3_)) {
 			int i = this.getEntryAt(p_mouseClicked_1_, p_mouseClicked_3_);
 			
-			if (i == -1 && p_mouseClicked_5_ == 0) {
-				return true;
-			} else if (i == -1) {
+			if (i == -1)
 				return this.clickedScrollbar;
-			}
 		}
 		
 		for (IGuiEventListener iguieventlistener : this.children) {
@@ -331,8 +368,19 @@ public class GuiConfigScreen extends GuiScreen {
 	@Override
 	public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_) {
 		if (p_keyPressed_1_ == 256 && this.allowCloseWithEscape()) {
-			this.close();
-			this.mc.displayGuiScreen(parent);
+			try {
+				if (listener.autoSaveOnGuiExit())
+					saveAll();
+				this.close();
+				this.mc.displayGuiScreen(parent);
+			} catch (Exception e) {
+				this.mc.displayGuiScreen(new GuiDirtMessageScreen("Can't save config.") {
+					@Override
+					public boolean allowCloseWithEscape() {
+						return true;
+					}
+				});
+			}
 			return true;
 		} else {
 			return super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);

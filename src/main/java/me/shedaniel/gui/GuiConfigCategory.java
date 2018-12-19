@@ -12,6 +12,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ public class GuiConfigCategory extends GuiEventHandler {
 	protected static final ResourceLocation ARROWS_TEXTURES = new ResourceLocation("textures/gui/resource_packs.png");
 	
 	private List<ConfigValue> configValues;
-	private List<IGuiEventListener> listeners;
+	private Map<ConfigValue, IGuiEventListener> listeners;
 	private GuiConfigScreen gui;
 	private int width;
 	private String name;
@@ -31,7 +32,7 @@ public class GuiConfigCategory extends GuiEventHandler {
 	public GuiConfigCategory(String name, GuiConfigScreen gui) {
 		this.name = name;
 		this.configValues = new ArrayList<>();
-		this.listeners = new ArrayList<>();
+		this.listeners = new HashMap<>();
 		this.gui = gui;
 		this.width = gui.width;
 		this.contracted = false;
@@ -47,9 +48,17 @@ public class GuiConfigCategory extends GuiEventHandler {
 		return configValues;
 	}
 	
+	public Map<ConfigValue, IGuiEventListener> getListeners() {
+		return listeners;
+	}
+	
 	@Override
 	protected List<IGuiEventListener> getChildren() {
-		return listeners;
+		List<IGuiEventListener> a = new ArrayList<>();
+		listeners.forEach((configValue, iGuiEventListener) -> {
+			a.add(iGuiEventListener);
+		});
+		return a;
 	}
 	
 	public int getSize() {
@@ -62,11 +71,12 @@ public class GuiConfigCategory extends GuiEventHandler {
 		for (int i = 0; i < configValues.size(); i++) {
 			ConfigValue value = configValues.get(i);
 			GuiConfigTextField textField = null;
-			listeners.add(textField = new GuiConfigTextField(value.getType(), 1000 + i, Minecraft.getInstance().fontRenderer, Minecraft.getInstance().fontRenderer.getStringWidth(value.getName() + ": ") + 16,
+			listeners.put(value, textField = new GuiConfigTextField(value.getType(), 1000 + i, Minecraft.getInstance().fontRenderer, Minecraft.getInstance().fontRenderer.getStringWidth(value.getName() + ": ") + 16,
 					0, 200, 16, textField));
+			textField.setMaxStringLength(256);
 			try {
 				textField.setText(String.valueOf(value.getObject()));
-			}catch (Exception e) {
+			} catch (Exception e) {
 				textField.setText("Can't load default value");
 			}
 		}
@@ -104,7 +114,7 @@ public class GuiConfigCategory extends GuiEventHandler {
 		
 		for (int i = 0; i < configValues.size(); i++) {
 			ConfigValue value = configValues.get(i);
-			IGuiEventListener listener = listeners.get(i);
+			IGuiEventListener listener = getChildren().get(i);
 			if (listener instanceof GuiConfigTextField) {
 				this.drawString(Minecraft.getInstance().fontRenderer, value.getName() + ":", 10, yPos + 28 + i * 24, 14737632);
 				((GuiConfigTextField) listener).y = (yPos + 28 + i * 24 - 4);
