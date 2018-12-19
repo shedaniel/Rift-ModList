@@ -1,12 +1,14 @@
 package me.shedaniel.utils;
 
+import me.shedaniel.gui.components.GuiConfigTextField;
+
 public class ConfigValue {
 	
 	private String name, category;
-	private ValueType type;
+	private GuiConfigTextField.TextFieldInputType type;
 	private Object object;
 	
-	private ConfigValue(String name, String category, ValueType type, Object value) {
+	private ConfigValue(String name, String category, GuiConfigTextField.TextFieldInputType type, Object value) {
 		this.name = name;
 		this.category = category;
 		this.type = type;
@@ -21,30 +23,16 @@ public class ConfigValue {
 		return category;
 	}
 	
-	public ValueType getType() {
+	public GuiConfigTextField.TextFieldInputType getType() {
 		return type;
 	}
 	
-	public static ConfigValue createConfigValue(String category, String name, Object value) {
-		for (ValueType type : ValueType.values())
-			for (Class c : type.getValueClasses())
-				if (c.isInstance(value))
-					return new ConfigValue(name, category, type, value);
-		throw new NullPointerException("Value not supported!");
+	public Object getObject() {
+		return object;
 	}
 	
-	public enum ValueType {
-		INT(Integer.class, int.class), LONG(Long.class, long.class), FLOAT(Float.class, float.class), DOUBLE(Double.class, double.class), STRING(String.class);
-		
-		private Class[] c;
-		
-		ValueType(Class... c) {
-			this.c = c;
-		}
-		
-		public Class[] getValueClasses() {
-			return c;
-		}
+	public static ConfigValue createConfigValue(String category, String name, GuiConfigTextField.TextFieldInputType type, Object value) {
+		return new ConfigValue(name, category, type, value);
 	}
 	
 }

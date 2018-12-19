@@ -61,10 +61,13 @@ public class GuiConfigCategory extends GuiEventHandler {
 	public void initComponents() {
 		for (int i = 0; i < configValues.size(); i++) {
 			ConfigValue value = configValues.get(i);
-			if (value.getType().equals(ConfigValue.ValueType.STRING)) {
-				GuiConfigTextField textField = null;
-				listeners.add(textField = new GuiConfigTextField(1000 + i, Minecraft.getInstance().fontRenderer, Minecraft.getInstance().fontRenderer.getStringWidth(value.getName() + ": ") + 16,
-						0, 200, 16, textField));
+			GuiConfigTextField textField = null;
+			listeners.add(textField = new GuiConfigTextField(value.getType(), 1000 + i, Minecraft.getInstance().fontRenderer, Minecraft.getInstance().fontRenderer.getStringWidth(value.getName() + ": ") + 16,
+					0, 200, 16, textField));
+			try {
+				textField.setText(String.valueOf(value.getObject()));
+			}catch (Exception e) {
+				textField.setText("Can't load default value");
 			}
 		}
 	}
@@ -102,16 +105,12 @@ public class GuiConfigCategory extends GuiEventHandler {
 		for (int i = 0; i < configValues.size(); i++) {
 			ConfigValue value = configValues.get(i);
 			IGuiEventListener listener = listeners.get(i);
-			if (value.getType().equals(ConfigValue.ValueType.STRING) && listener instanceof GuiConfigTextField) {
+			if (listener instanceof GuiConfigTextField) {
 				this.drawString(Minecraft.getInstance().fontRenderer, value.getName() + ":", 10, yPos + 28 + i * 24, 14737632);
-				((GuiConfigTextField) listener).setPosY(yPos + 28 + i * 24 - 4);
+				((GuiConfigTextField) listener).y = (yPos + 28 + i * 24 - 4);
 				((GuiConfigTextField) listener).drawTextField(mouseXIn, mouseXIn, partialTicks);
 			}
 		}
-	}
-	
-	public void tick() {
-	
 	}
 	
 	public boolean mouseClicked(double mouseX, double mouseY, int p_mouseClicked_5_) {

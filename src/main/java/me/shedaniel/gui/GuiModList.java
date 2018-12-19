@@ -1,6 +1,7 @@
 package me.shedaniel.gui;
 
 import me.shedaniel.RiftModList;
+import me.shedaniel.gui.components.GuiConfigTextField;
 import me.shedaniel.utils.ConfigValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
@@ -39,9 +40,9 @@ public class GuiModList extends GuiScreen {
 	
 	public static void openTestConfig() {
 		List<ConfigValue> list = new ArrayList<>();
-		list.add(ConfigValue.createConfigValue("General", "Name", ""));
-		list.add(ConfigValue.createConfigValue("General", "Idk Ah", ""));
-		list.add(ConfigValue.createConfigValue("Developer", "Just input here", ""));
+		list.add(ConfigValue.createConfigValue("General", "Name", GuiConfigTextField.TextFieldInputType.TEXT, ""));
+		list.add(ConfigValue.createConfigValue("General", "Random Int", GuiConfigTextField.TextFieldInputType.NUMBER, 123));
+		list.add(ConfigValue.createConfigValue("Developer", "Just input here", GuiConfigTextField.TextFieldInputType.TEXT, "Default"));
 		Minecraft.getInstance().displayGuiScreen(getConfigScreen(RiftModList.guiModList, list, getModByID("riftmodlist")));
 	}
 	
@@ -202,9 +203,6 @@ public class GuiModList extends GuiScreen {
 		return guiModListContent;
 	}
 	
-	/*
-	Need to fix this
-	 */
 	public static GuiConfigScreen getConfigScreen(GuiScreen parent, List<ConfigValue> values, RiftMod mod) {
 		GuiConfigScreen configScreen = new GuiConfigScreen(parent, mod, RiftModList.guiModList.width, RiftModList.guiModList.height);
 		Map<String, GuiConfigCategory> categoryMap = new HashMap<>();
