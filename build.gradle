@@ -4,6 +4,7 @@ buildscript {
         maven { url 'https://www.jitpack.io' }
         maven { url 'http://repo.spongepowered.org/maven' }
         maven { url 'http://files.minecraftforge.net/maven' }
+        maven { url "https://jitpack.io" }
     }
     dependencies {
         classpath 'com.github.Chocohead:ForgeGradle:moderniser-SNAPSHOT'
@@ -15,7 +16,7 @@ apply plugin: 'net.minecraftforge.gradle.tweaker-client'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'java'
 
-group 'me.shedaniel'
+group 'com.github.shedaniel'
 version '1.5-SNAPSHOT'
 archivesBaseName = 'Rift-ModList'
 
@@ -30,10 +31,7 @@ repositories {
     maven { url "http://repo.strezz.org/artifactory/list/Strezz-Central" }
 }
 
-dependencies {
-    implementation 'com.github.Chocohead:Rift:f76cf44d887d290782590c99770876393c924333:dev'
-    implementation 'com.google.code.gson:gson:2.8.5'
-}
+
 
 mixin {
     defaultObfuscationEnv notch
@@ -45,4 +43,21 @@ minecraft {
     mappings = 'snapshot_20181130'
     runDir = 'run'
     tweakClass = 'org.dimdev.riftloader.launch.RiftLoaderClientTweaker'
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        maven { url "https://jitpack.io" }
+    }
+}
+
+dependencies {
+    implementation 'com.github.Chocohead:Rift:f76cf44d887d290782590c99770876393c924333:dev'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.github.shedaniel:Rift-ModList:jitpack-dev-SNAPSHOT'
+}
+
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
