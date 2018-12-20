@@ -1,7 +1,7 @@
 package me.shedaniel.gui.components;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SimpleSound;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.IGuiEventListener;
@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.util.ResourceLocation;
 
 public class GuiConfigCheckBox extends Gui implements IGuiEventListener {
 	
@@ -49,7 +48,7 @@ public class GuiConfigCheckBox extends Gui implements IGuiEventListener {
 			boolean flag = p_mouseClicked_1_ >= this.x && p_mouseClicked_1_ < this.x + 16 && p_mouseClicked_3_ >= this.y - 4 && p_mouseClicked_3_ < this.y + 16 - 4;
 			if (flag && p_mouseClicked_5_ == 0) {
 				this.setSelected(!isSelected());
-				Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+				Minecraft.getInstance().getSoundHandler().play(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 				return true;
 			}
 		}

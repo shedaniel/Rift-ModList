@@ -4,7 +4,7 @@ import me.shedaniel.gui.components.GuiConfigCheckBox;
 import me.shedaniel.gui.components.GuiConfigTextField;
 import me.shedaniel.utils.ConfigValue;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SimpleSound;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiEventHandler;
 import net.minecraft.client.gui.IGuiEventListener;
@@ -135,7 +135,7 @@ public class GuiConfigCategory extends GuiEventHandler {
 	public boolean mouseClicked(double mouseX, double mouseY, int p_mouseClicked_5_) {
 		if (mouseY > yPos && mouseY < yPos + 20) {
 			contracted = !contracted;
-			Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+			Minecraft.getInstance().getSoundHandler().play(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			return true;
 		}
 		for (ConfigValue configValue : configValues) {
