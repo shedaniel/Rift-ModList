@@ -4,7 +4,6 @@ import me.shedaniel.RiftModList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiConfirmOpenLink;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -20,7 +19,6 @@ import java.util.List;
 public class GuiModListView extends GuiScreen {
 	
 	private RiftMod mod;
-	private GuiConfirmOpenLink openLink;
 	
 	public GuiModListView(RiftMod mod) {
 		this.mod = mod;
