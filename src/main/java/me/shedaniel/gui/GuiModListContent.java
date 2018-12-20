@@ -9,10 +9,11 @@ import net.minecraft.client.gui.GuiSlot;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.SoundEvents;
-import org.dimdev.riftloader.ModInfo;
 
-import java.util.*;
-import java.util.function.Supplier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class GuiModListContent extends GuiSlot {
 	
@@ -26,7 +27,7 @@ public class GuiModListContent extends GuiSlot {
 				parent.getMinecraftInstance(),
 				parent.width,
 				parent.height,
-				40,
+				60,
 				parent.height - 40,
 				40
 		);
@@ -34,7 +35,12 @@ public class GuiModListContent extends GuiSlot {
 		this.modList = new ArrayList<>();
 		this.fontRenderer = mc.fontRenderer;
 		setShowSelectionBox(true);
-		searchFilter(searchTerm, true);
+		searchFilter(searchTerm);
+	}
+	
+	@Override
+	public int getListWidth() {
+		return this.width - 48 * 2;
 	}
 	
 	public int getCurrentIndex() {
@@ -123,20 +129,42 @@ public class GuiModListContent extends GuiSlot {
 		return super.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_);
 	}
 	
+	@Override
+	protected int getScrollBarX() {
+		return this.width - 46;
+	}
+	
 	public void setCurrentIndex(int currentIndex) {
 		this.currentIndex = currentIndex;
 	}
 	
-	public void searchFilter(String searchTerm, boolean var2) {
-		this.focusNext();
-		List<RiftMod> modList = new LinkedList<>(GuiModList.modList);
-		if (modList == null || var2) {
-			modList = new ArrayList<>();
-			GuiModList.regenerateMods();
-			modList.addAll(GuiModList.modList);
-			modList.sort(Comparator.comparing(riftMod -> riftMod.getName()));
+	public void searchFilter(String searchTerm) {
+		String currentId = currentIndex > 0 ? modList.get(currentIndex).getId() : "";
+		List<RiftMod> modList = new ArrayList<>();
+		if (searchTerm.replaceAll(" ", "").equals(""))
+			modList = new LinkedList<>(GuiModList.modList);
+		else
+			for (RiftMod mod : GuiModList.modList) {
+				List<String> list = new LinkedList<>(mod.getAuthors());
+				list.addAll(Arrays.asList(new String[]{mod.getId(), mod.getDescription(), mod.getName(), mod.getUrl()}));
+				if (hasMatch(searchTerm, list.toArray(new String[list.size()])))
+					modList.add(mod);
+			}
+		this.modList = new LinkedList<>(modList);
+		int i = -1;
+		for (int j = 0; j < modList.size(); j++) {
+			RiftMod mod = modList.get(j);
+			if (mod.getId().equals(currentId))
+				i = j;
 		}
-		this.modList = modList;
+		setCurrentIndex(i);
+	}
+	
+	private boolean hasMatch(String searchTerm, String... items) {
+		for (String i : items)
+			if (i.toLowerCase().contains(searchTerm.toLowerCase()))
+				return true;
+		return false;
 	}
 	
 }

@@ -26,6 +26,7 @@ public class MixinGuiIngameMenu extends GuiScreen {
 					RiftModList.guiModList.getGuiModListContent().setCurrentIndex(-1);
 				RiftModList.guiModList.lastIndex = -1;
 				RiftModList.guiModList.setPreviousGui(Minecraft.getInstance().currentScreen);
+				RiftModList.guiModList.reloadSearch();
 				mc.displayGuiScreen(RiftModList.guiModList);
 			}
 		});
