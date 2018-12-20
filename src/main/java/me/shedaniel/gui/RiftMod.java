@@ -171,11 +171,11 @@ public class RiftMod {
 		Class<?> listenerClass;
 		try {
 			listenerClass = Launch.classLoader.findClass(path);
-			return OpenModConfigListener.class.cast(listenerClass);
+			return (OpenModConfigListener) listenerClass.newInstance();
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException("Failed to find listener class " + path, e);
 		} catch (ClassCastException e) {
-			throw new RuntimeException("Failed to case listener class " + path, e);
+			throw new RuntimeException("Failed to cast listener class " + path, e);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to init listener class " + path, e);
 		}

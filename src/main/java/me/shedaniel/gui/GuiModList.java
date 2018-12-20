@@ -45,8 +45,6 @@ public class GuiModList extends GuiScreen {
 				mod.setResourceLocation(new ResourceLocation("riftmodlist:textures/gui/rift_pack.png"));
 			}
 			mod.setConfigListener(mod.findConfigListener(mod.loadValueFromJar(modInfo.source, "config_listener", "")));
-			if (modInfo.id.equals("riftmodlist"))
-				mod.setConfigListener(new RiftModListConfigListener());
 			if (modInfo.id.equals("optifine") && mod.getConfigListener() == null)
 				mod.setConfigListener(new OptifineConfigListener());
 			modList.add(mod);

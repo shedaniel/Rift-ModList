@@ -407,9 +407,8 @@ public class GuiConfigTextField extends Gui implements IGuiEventListener {
 		} else {
 			boolean flag = p_mouseClicked_1_ >= (double) this.x && p_mouseClicked_1_ < (double) (this.x + this.width) && p_mouseClicked_3_ >= (double) this.y && p_mouseClicked_3_ < (double) (this.y + this.height);
 			
-			if (this.canLoseFocus) {
+			if (this.canLoseFocus)
 				this.setFocused(flag);
-			}
 			
 			if (this.isFocused && flag && p_mouseClicked_5_ == 0) {
 				int i = MathHelper.floor(p_mouseClicked_1_) - this.x;

@@ -1,6 +1,7 @@
 package me.shedaniel.gui;
 
 import com.google.common.collect.Lists;
+import me.shedaniel.gui.components.GuiConfigCheckBox;
 import me.shedaniel.gui.components.GuiConfigTextField;
 import me.shedaniel.listener.OpenModConfigListener;
 import me.shedaniel.utils.ConfigValue;
@@ -67,6 +68,8 @@ public class GuiConfigScreen extends GuiScreen {
 			guiConfigCategory.getListeners().forEach((configValue, eventListener) -> {
 				if (eventListener instanceof GuiConfigTextField)
 					values.add(configValue.clone().setObject(((GuiConfigTextField) eventListener).getText()));
+				if (eventListener instanceof GuiConfigCheckBox)
+					values.add(configValue.clone().setObject(((GuiConfigCheckBox) eventListener).isSelected()));
 			});
 		});
 		this.listener.onSave(values);
@@ -105,9 +108,12 @@ public class GuiConfigScreen extends GuiScreen {
 	}
 	
 	protected int getContentHeight() {
-		int i = 600;
-		for (Map.Entry<String, GuiConfigCategory> entry : getCategories().entrySet())
-			i += entry.getValue().getSize();
+		int i = 0;
+		List<GuiConfigCategory> b = new ArrayList<>();
+		getCategories().forEach((s, guiConfigCategory) -> b.add(guiConfigCategory));
+		for (GuiConfigCategory category : b) {
+			i += category.getSize();
+		}
 		return i;
 	}
 	
@@ -264,13 +270,6 @@ public class GuiConfigScreen extends GuiScreen {
 			saveButton.onClick(p_mouseClicked_1_, p_mouseClicked_3_);
 		this.checkScrollbarClick(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_);
 		
-		if (this.isMouseInList(p_mouseClicked_1_, p_mouseClicked_3_)) {
-			int i = this.getEntryAt(p_mouseClicked_1_, p_mouseClicked_3_);
-			
-			if (i == -1)
-				return this.clickedScrollbar;
-		}
-		
 		for (IGuiEventListener iguieventlistener : this.children) {
 			boolean flag = iguieventlistener.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_);
 			if (flag) {
@@ -329,7 +328,7 @@ public class GuiConfigScreen extends GuiScreen {
 	
 	@Override
 	public boolean mouseScrolled(double p_mouseScrolled_1_) {
-		this.amountScrolled -= p_mouseScrolled_1_ * 20;
+		scrollBy(-(int) (p_mouseScrolled_1_ * 20));
 		return true;
 	}
 	

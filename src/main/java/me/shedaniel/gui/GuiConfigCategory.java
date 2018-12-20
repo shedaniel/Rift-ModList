@@ -1,5 +1,6 @@
 package me.shedaniel.gui;
 
+import me.shedaniel.gui.components.GuiConfigCheckBox;
 import me.shedaniel.gui.components.GuiConfigTextField;
 import me.shedaniel.utils.ConfigValue;
 import net.minecraft.client.Minecraft;
@@ -55,8 +56,9 @@ public class GuiConfigCategory extends GuiEventHandler {
 	@Override
 	protected List<IGuiEventListener> getChildren() {
 		List<IGuiEventListener> a = new ArrayList<>();
-		listeners.forEach((configValue, iGuiEventListener) -> {
-			a.add(iGuiEventListener);
+		configValues.forEach(configValue -> {
+			if (listeners.containsKey(configValue))
+				a.add(listeners.get(configValue));
 		});
 		return a;
 	}
@@ -64,20 +66,26 @@ public class GuiConfigCategory extends GuiEventHandler {
 	public int getSize() {
 		if (contracted)
 			return 20;
-		return configValues.size() * 24 + 20;
+		return configValues.size() * 24 + 25;
 	}
 	
 	public void initComponents() {
 		for (int i = 0; i < configValues.size(); i++) {
 			ConfigValue value = configValues.get(i);
-			GuiConfigTextField textField = null;
-			listeners.put(value, textField = new GuiConfigTextField(value.getType(), 1000 + i, Minecraft.getInstance().fontRenderer, Minecraft.getInstance().fontRenderer.getStringWidth(value.getName() + ": ") + 16,
-					0, 200, 16, textField));
-			textField.setMaxStringLength(256);
-			try {
-				textField.setText(String.valueOf(value.getObject()));
-			} catch (Exception e) {
-				textField.setText("Can't load default value");
+			if (value.getType().equals(ConfigValue.ValueType.BOOLEAN)) {
+				GuiConfigCheckBox checkBox = null;
+				listeners.put(value, checkBox = new GuiConfigCheckBox(1000 + i, 10, 0, value.getName(), value.getAsBoolean()));
+				checkBox.setSelected(value.getAsBoolean());
+			} else {
+				GuiConfigTextField textField = null;
+				listeners.put(value, textField = new GuiConfigTextField(value.getType().getTextFieldInputType(), 1000 + i, Minecraft.getInstance().fontRenderer, Minecraft.getInstance().fontRenderer.getStringWidth(value.getName() + ": ") + 16,
+						0, 200, 16, textField));
+				textField.setMaxStringLength(256);
+				try {
+					textField.setText(value.getAsString());
+				} catch (Exception e) {
+					textField.setText("Can't load default value");
+				}
 			}
 		}
 	}
@@ -109,18 +117,19 @@ public class GuiConfigCategory extends GuiEventHandler {
 			Gui.drawModalRectWithCustomSizedTexture(this.width - 18, yPos + 7, 114, 5 + j, 16, 16, 256, 256);
 		else
 			Gui.drawModalRectWithCustomSizedTexture(this.width - 18, yPos + 7, 82, 20 + j, 16, 16, 256, 256);
-		if (contracted)
-			return;
-		
-		for (int i = 0; i < configValues.size(); i++) {
-			ConfigValue value = configValues.get(i);
-			IGuiEventListener listener = getChildren().get(i);
-			if (listener instanceof GuiConfigTextField) {
-				this.drawString(Minecraft.getInstance().fontRenderer, value.getName() + ":", 10, yPos + 28 + i * 24, 14737632);
-				((GuiConfigTextField) listener).y = (yPos + 28 + i * 24 - 4);
-				((GuiConfigTextField) listener).drawTextField(mouseXIn, mouseXIn, partialTicks);
+		if (!contracted)
+			for (int i = 0; i < configValues.size(); i++) {
+				ConfigValue value = configValues.get(i);
+				IGuiEventListener listener = getChildren().get(i);
+				if (listener instanceof GuiConfigTextField) {
+					this.drawString(Minecraft.getInstance().fontRenderer, value.getName() + ":", 10, yPos + 28 + i * 24, 14737632);
+					((GuiConfigTextField) listener).y = (yPos + 28 + i * 24 - 4);
+					((GuiConfigTextField) listener).drawTextField(mouseXIn, mouseYIn, partialTicks);
+				} else if (listener instanceof GuiConfigCheckBox) {
+					((GuiConfigCheckBox) listener).setY(yPos + 28 + i * 24);
+					((GuiConfigCheckBox) listener).drawCheckBox(mouseXIn, mouseYIn, partialTicks);
+				}
 			}
-		}
 	}
 	
 	public boolean mouseClicked(double mouseX, double mouseY, int p_mouseClicked_5_) {
@@ -129,7 +138,19 @@ public class GuiConfigCategory extends GuiEventHandler {
 			Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			return true;
 		}
-		return super.mouseClicked(mouseX, mouseY, p_mouseClicked_5_);
+		for (ConfigValue configValue : configValues) {
+			try {
+				IGuiEventListener iguieventlistener = listeners.get(configValue);
+				if (iguieventlistener.mouseClicked(mouseX, mouseY, p_mouseClicked_5_)) {
+					this.focusOn(iguieventlistener);
+					if (p_mouseClicked_5_ == 0)
+						this.setDragging(true);
+					return true;
+				}
+			} catch (Exception e) {
+			}
+		}
+		return false;
 	}
 	
 	@Override
