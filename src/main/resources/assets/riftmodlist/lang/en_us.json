@@ -15,5 +15,6 @@
   "riftmodlist.optifine.description": "OptiFine is a Minecraft optimization mod.\nIt allows Minecraft to run faster and look better with full support for HD textures and many configuration options.",
   "riftmodlist.cannot_config": "Can't Access Config",
   "riftmodlist.config": "Configure",
-  "riftmodlist.search_mods": "Search Mods..."
+  "riftmodlist.search_mods": "Search Mods...",
+  "riftmodlist.config_done": "Done & Save"
 }

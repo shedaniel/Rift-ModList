@@ -3,17 +3,17 @@ package me.shedaniel.gui;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import me.shedaniel.listener.OpenModConfigListener;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.NativeImage;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -26,7 +26,7 @@ public class RiftMod {
 	private List<String> authors;
 	private String id, name, versions, url, description;
 	private ResourceLocation resourceLocation;
-	private Method configMethod;
+	private OpenModConfigListener configListener;
 	
 	public RiftMod(String id, File file) {
 		this(id, id, file, false);
@@ -40,7 +40,7 @@ public class RiftMod {
 		this.description = "A mod for Rift.";
 		this.authors = new ArrayList<>();
 		this.nativeImage = null;
-		this.configMethod = null;
+		this.configListener = null;
 		if (loadIcon)
 			tryLoadPackIcon(file, "pack.png");
 	}
@@ -60,24 +60,19 @@ public class RiftMod {
 		return false;
 	}
 	
-	public Method getConfigMethod() {
-		return configMethod;
+	public OpenModConfigListener getConfigListener() {
+		return configListener;
 	}
 	
-	public boolean runConfigMethod() {
-		if (configMethod == null)
+	public boolean runConfigListener() {
+		if (configListener == null)
 			return false;
-		try {
-			configMethod.invoke(null);
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
+		configListener.openConfigGui();
+		return true;
 	}
 	
-	public boolean hasConfigMethod() {
-		return configMethod != null;
+	public boolean hasConfigListener() {
+		return configListener != null;
 	}
 	
 	public String getDescription() {
@@ -124,10 +119,6 @@ public class RiftMod {
 		return authors;
 	}
 	
-	public void setConfigMethod(Method configMethod) {
-		this.configMethod = configMethod;
-	}
-	
 	public void setResourceLocation(ResourceLocation resourceLocation) {
 		this.resourceLocation = resourceLocation;
 	}
@@ -168,37 +159,25 @@ public class RiftMod {
 		return defaultAnswer;
 	}
 	
-	public static Method loadMethodFromJar(File file, String value, Method defaultMethod) {
-		if (!file.isFile()) return defaultMethod;
-		try (JarFile jar = new JarFile(file)) {
-			JarEntry entry = jar.getJarEntry("riftmod.json");
-			if (entry != null) {
-				InputStream inputStream = jar.getInputStream(entry);
-				JsonElement element = new JsonParser().parse(new InputStreamReader(inputStream));
-				JsonObject object = element.getAsJsonObject();
-				if (object.has(value)) {
-					String methodString = object.get(value).getAsString();
-					return loadMethodFromString(methodString, defaultMethod);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return defaultMethod;
+	public void setConfigListener(OpenModConfigListener configListener) {
+		if (configListener == null)
+			return;
+		this.configListener = configListener;
 	}
 	
-	public static Method loadMethodFromString(String methodString, Method defaultMethod) {
-		Exception e = null;
+	public OpenModConfigListener findConfigListener(String path) {
+		if (path.equals(""))
+			return null;
+		Class<?> listenerClass;
 		try {
-			String className = methodString.split("\\$")[0], methodName = methodString.split("\\$")[1];
-			Class cls = Class.forName(className);
-			Method method = cls.getDeclaredMethod(methodName);
-			return method;
-		} catch (Exception ex) {
-			e = ex;
+			listenerClass = Launch.classLoader.findClass(path);
+			return (OpenModConfigListener) listenerClass.newInstance();
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException("Failed to find listener class " + path, e);
+		} catch (ClassCastException e) {
+			throw new RuntimeException("Failed to cast listener class " + path, e);
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to init listener class " + path, e);
 		}
-		e.printStackTrace();
-		return defaultMethod;
 	}
-	
 }

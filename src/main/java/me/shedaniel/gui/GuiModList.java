@@ -1,7 +1,8 @@
 package me.shedaniel.gui;
 
 import me.shedaniel.RiftModList;
-import me.shedaniel.utils.ConfigValue;
+import me.shedaniel.gui.config.OptifineConfigListener;
+import me.shedaniel.gui.config.RiftModListConfigListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.resources.I18n;
@@ -29,29 +30,6 @@ public class GuiModList extends GuiScreen {
 		regenerateMods();
 	}
 	
-	public static void openOptifineConfig() {
-		try {
-			RiftModList.guiModList.close();
-		} catch (Exception e) {
-		}
-		Minecraft.getInstance().displayGuiScreen(new GuiVideoSettings(Minecraft.getInstance().currentScreen, Minecraft.getInstance().gameSettings));
-	}
-	
-	public static void openTestConfig() {
-		Map<String, ConfigValue> map = new HashMap<>();
-		map.put("general", ConfigValue.createConfigValue("General", "Name", ""));
-		map.put("general", ConfigValue.createConfigValue("General", "Idk Ah", ""));
-		map.put("developer", ConfigValue.createConfigValue("Developer", "Just input here", ""));
-		Minecraft.getInstance().displayGuiScreen(getConfigScreen(RiftModList.guiModList, map, getModByID("riftmodlist")));
-	}
-	
-	public static RiftMod getModByID(String id) {
-		for (RiftMod mod : modList)
-			if (mod.getId().equals(id))
-				return mod;
-		return null;
-	}
-	
 	public static void regenerateMods() {
 		modList = new ArrayList<>();
 		for (ModInfo modInfo : RiftLoader.instance.getMods()) {
@@ -63,13 +41,12 @@ public class GuiModList extends GuiScreen {
 			mod.setDescription(mod.loadValueFromJar(modInfo.source, "description",
 					(modInfo.id.equals("optifine") ? I18n.format("riftmodlist.optifine.description") : modInfo.id.equals("rift") ?
 							I18n.format("riftmodlist.rift.description") : "A mod for Rift.")));
-			mod.setConfigMethod(mod.loadMethodFromJar(modInfo.source, "configure_gui", (modInfo.id.equals("optifine") ?
-					mod.loadMethodFromString("me.shedaniel.gui.GuiModList$openOptifineConfig", null) : null)));
 			if (!mod.tryLoadPackIcon(modInfo.source, mod.loadValueFromJar(modInfo.source, "icon_file", "pack.png")) && modInfo.id.equals("rift")) {
 				mod.setResourceLocation(new ResourceLocation("riftmodlist:textures/gui/rift_pack.png"));
 			}
-			if (modInfo.id.equals("riftmodlist"))
-				mod.setConfigMethod(mod.loadMethodFromString("me.shedaniel.gui.GuiModList$openTestConfig", null));
+			mod.setConfigListener(mod.findConfigListener(mod.loadValueFromJar(modInfo.source, "config_listener", "")));
+			if (modInfo.id.equals("optifine") && mod.getConfigListener() == null)
+				mod.setConfigListener(new OptifineConfigListener());
 			modList.add(mod);
 		}
 		Collections.sort(modList, (riftMod, anotherMod) -> {
@@ -112,7 +89,7 @@ public class GuiModList extends GuiScreen {
 		addButton(configButton = new GuiConfigButton(105, this.width - 100, this.height - 30, 90, 20, configString) {
 			@Override
 			public void onClick(double mouseX, double mouseY) {
-				if (!guiModListContent.getModList().get(guiModListContent.getCurrentIndex()).runConfigMethod()) {
+				if (!guiModListContent.getModList().get(guiModListContent.getCurrentIndex()).runConfigListener()) {
 					displayString = I18n.format("riftmodlist.cannot_config");
 					enabled = false;
 				} else {
@@ -166,7 +143,7 @@ public class GuiModList extends GuiScreen {
 			if (lastIndex != guiModListContent.getCurrentIndex()) {
 				lastIndex = guiModListContent.getCurrentIndex();
 				configButton.displayString = configString;
-				configButton.enabled = guiModListContent.getModList().get(guiModListContent.getCurrentIndex()).hasConfigMethod();
+				configButton.enabled = guiModListContent.getModList().get(guiModListContent.getCurrentIndex()).hasConfigListener();
 			}
 		} catch (Exception e) {
 		
@@ -200,26 +177,6 @@ public class GuiModList extends GuiScreen {
 	@Nullable
 	public GuiModListContent getGuiModListContent() {
 		return guiModListContent;
-	}
-	
-	/*
-	Need to fix this
-	 */
-	public static GuiConfigScreen getConfigScreen(GuiScreen parent, Map<String, ConfigValue> map, RiftMod mod) {
-		GuiConfigScreen configScreen = new GuiConfigScreen(parent, mod, RiftModList.guiModList.width, RiftModList.guiModList.height);
-		for (Map.Entry<String, ConfigValue> entry : map.entrySet()) {
-			GuiConfigCategory category = configScreen.getCategories().containsKey(entry.getKey().toLowerCase()) ? configScreen.getCategories().get(entry.getKey().toLowerCase()) : new GuiConfigCategory(entry.getValue().getCategory(), configScreen);
-			category.getConfigValues().add(entry.getValue());
-			if (!configScreen.getCategories().containsKey(entry.getKey().toLowerCase()))
-				configScreen.addListener(category);
-			if (configScreen.getCategories().containsKey(entry.getKey().toLowerCase()))
-				configScreen.getCategories().remove(entry.getKey().toLowerCase());
-			configScreen.getCategories().put(entry.getKey().toLowerCase(), category);
-		}
-		for (Map.Entry<String, GuiConfigCategory> entry : configScreen.getCategories().entrySet()) {
-			entry.getValue().initComponents();
-		}
-		return configScreen;
 	}
 	
 }

@@ -1,5 +1,6 @@
 package me.shedaniel.gui;
 
+import me.shedaniel.gui.components.GuiConfigCheckBox;
 import me.shedaniel.gui.components.GuiConfigTextField;
 import me.shedaniel.utils.ConfigValue;
 import net.minecraft.client.Minecraft;
@@ -12,7 +13,9 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GuiConfigCategory extends GuiEventHandler {
 	
@@ -20,7 +23,7 @@ public class GuiConfigCategory extends GuiEventHandler {
 	protected static final ResourceLocation ARROWS_TEXTURES = new ResourceLocation("textures/gui/resource_packs.png");
 	
 	private List<ConfigValue> configValues;
-	private List<IGuiEventListener> listeners;
+	private Map<ConfigValue, IGuiEventListener> listeners;
 	private GuiConfigScreen gui;
 	private int width;
 	private String name;
@@ -30,7 +33,7 @@ public class GuiConfigCategory extends GuiEventHandler {
 	public GuiConfigCategory(String name, GuiConfigScreen gui) {
 		this.name = name;
 		this.configValues = new ArrayList<>();
-		this.listeners = new ArrayList<>();
+		this.listeners = new HashMap<>();
 		this.gui = gui;
 		this.width = gui.width;
 		this.contracted = false;
@@ -46,29 +49,45 @@ public class GuiConfigCategory extends GuiEventHandler {
 		return configValues;
 	}
 	
+	public Map<ConfigValue, IGuiEventListener> getListeners() {
+		return listeners;
+	}
+	
 	@Override
 	protected List<IGuiEventListener> getChildren() {
-		return new ArrayList<>();
+		List<IGuiEventListener> a = new ArrayList<>();
+		configValues.forEach(configValue -> {
+			if (listeners.containsKey(configValue))
+				a.add(listeners.get(configValue));
+		});
+		return a;
 	}
 	
 	public int getSize() {
 		if (contracted)
 			return 20;
-		return configValues.size() * 24 + 20;
+		return configValues.size() * 24 + 25;
 	}
 	
 	public void initComponents() {
 		for (int i = 0; i < configValues.size(); i++) {
 			ConfigValue value = configValues.get(i);
-			System.out.println(value.getType().name());
-			if (value.getType().equals(ConfigValue.ValueType.STRING)) {
+			if (value.getType().equals(ConfigValue.ValueType.BOOLEAN)) {
+				GuiConfigCheckBox checkBox = null;
+				listeners.put(value, checkBox = new GuiConfigCheckBox(1000 + i, 10, 0, value.getName(), value.getAsBoolean()));
+				checkBox.setSelected(value.getAsBoolean());
+			} else {
 				GuiConfigTextField textField = null;
-				listeners.add(textField = new GuiConfigTextField(1000 + i, Minecraft.getInstance().fontRenderer, Minecraft.getInstance().fontRenderer.getStringWidth(value.getName() + ": ") + 16,
+				listeners.put(value, textField = new GuiConfigTextField(value.getType().getTextFieldInputType(), 1000 + i, Minecraft.getInstance().fontRenderer, Minecraft.getInstance().fontRenderer.getStringWidth(value.getName() + ": ") + 16,
 						0, 200, 16, textField));
-				this.getChildren().add(textField);
+				textField.setMaxStringLength(256);
+				try {
+					textField.setText(value.getAsString());
+				} catch (Exception e) {
+					textField.setText("Can't load default value");
+				}
 			}
 		}
-		System.out.println(configValues.size() + "." + listeners.size());
 	}
 	
 	public void drawCategory(int slotIndex, int xPos, int yPos, int heightIn, int mouseXIn, int mouseYIn, float partialTicks) {
@@ -98,22 +117,19 @@ public class GuiConfigCategory extends GuiEventHandler {
 			Gui.drawModalRectWithCustomSizedTexture(this.width - 18, yPos + 7, 114, 5 + j, 16, 16, 256, 256);
 		else
 			Gui.drawModalRectWithCustomSizedTexture(this.width - 18, yPos + 7, 82, 20 + j, 16, 16, 256, 256);
-		if (contracted)
-			return;
-		
-		for (int i = 0; i < configValues.size(); i++) {
-			ConfigValue value = configValues.get(i);
-			IGuiEventListener listener = listeners.get(i);
-			if (value.getType().equals(ConfigValue.ValueType.STRING) && listener instanceof GuiConfigTextField) {
-				this.drawString(Minecraft.getInstance().fontRenderer, value.getName() + ":", 10, yPos + 28 + i * 24, 16777120);
-				((GuiConfigTextField) listener).setPosY(yPos + 28 + i * 24 - 4);
-				((GuiConfigTextField) listener).drawTextField(mouseXIn, mouseXIn, partialTicks);
+		if (!contracted)
+			for (int i = 0; i < configValues.size(); i++) {
+				ConfigValue value = configValues.get(i);
+				IGuiEventListener listener = getChildren().get(i);
+				if (listener instanceof GuiConfigTextField) {
+					this.drawString(Minecraft.getInstance().fontRenderer, value.getName() + ":", 10, yPos + 28 + i * 24, 14737632);
+					((GuiConfigTextField) listener).y = (yPos + 28 + i * 24 - 4);
+					((GuiConfigTextField) listener).drawTextField(mouseXIn, mouseYIn, partialTicks);
+				} else if (listener instanceof GuiConfigCheckBox) {
+					((GuiConfigCheckBox) listener).setY(yPos + 28 + i * 24);
+					((GuiConfigCheckBox) listener).drawCheckBox(mouseXIn, mouseYIn, partialTicks);
+				}
 			}
-		}
-	}
-	
-	public void tick() {
-	
 	}
 	
 	public boolean mouseClicked(double mouseX, double mouseY, int p_mouseClicked_5_) {
@@ -122,25 +138,34 @@ public class GuiConfigCategory extends GuiEventHandler {
 			Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			return true;
 		}
-		for (IGuiEventListener listener : listeners)
-			if (listener.mouseClicked(mouseX, mouseY, p_mouseClicked_5_))
-				return true;
+		for (ConfigValue configValue : configValues) {
+			try {
+				IGuiEventListener iguieventlistener = listeners.get(configValue);
+				if (iguieventlistener.mouseClicked(mouseX, mouseY, p_mouseClicked_5_)) {
+					this.focusOn(iguieventlistener);
+					if (p_mouseClicked_5_ == 0)
+						this.setDragging(true);
+					return true;
+				}
+			} catch (Exception e) {
+			}
+		}
 		return false;
 	}
 	
 	@Override
-	public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_) {
-		for (IGuiEventListener listener : listeners)
-			if (listener.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_))
-				return true;
-		return false;
-	}
-	
-	@Override
-	public boolean charTyped(char p_charTyped_1_, int p_charTyped_2_) {
-		for (IGuiEventListener listener : listeners)
-			if (listener.charTyped(p_charTyped_1_, p_charTyped_2_))
-				return true;
-		return false;
+	public void focusChanged(boolean focused) {
+		if (focused) {
+			for (Map.Entry<String, GuiConfigCategory> entry : gui.getCategories().entrySet()) {
+				if (!entry.getValue().equals(this)) {
+					entry.getValue().setFocused(null);
+					for (IGuiEventListener listener : entry.getValue().getChildren())
+						listener.focusChanged(false);
+				}
+			}
+		} else {
+			for (IGuiEventListener listener : this.getChildren())
+				listener.focusChanged(false);
+		}
 	}
 }
