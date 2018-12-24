@@ -14,6 +14,8 @@ import org.spongepowered.asm.mixin.Mixins;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static me.shedaniel.gui.GuiModList.modList;
 import static me.shedaniel.gui.GuiModList.regenerateMods;
@@ -28,7 +30,7 @@ public class RiftModList implements InitializationListener {
 		Mixins.addConfiguration("mixins.riftmodlist.json");
 	}
 	
-	public static GuiConfigScreen getConfigScreen(OpenModConfigListener listener, GuiScreen parent, List<ConfigValue> values, RiftMod mod) {
+	public static GuiConfigScreen getConfigScreen(OpenModConfigListener listener, GuiScreen parent, List<ConfigValue> values, RiftMod mod, Consumer<List<ConfigValue>> onSave) {
 		GuiConfigScreen configScreen = new GuiConfigScreen(listener, parent, mod, RiftModList.guiModList.width, RiftModList.guiModList.height);
 		Map<String, GuiConfigCategory> categoryMap = new HashMap<>();
 		for (ConfigValue value : values) {

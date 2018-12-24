@@ -17,7 +17,7 @@ apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'java'
 
 group 'com.github.shedaniel'
-version '1.5-SNAPSHOT'
+version '1.6'
 archivesBaseName = 'Rift-ModList'
 
 sourceCompatibility = 1.8
