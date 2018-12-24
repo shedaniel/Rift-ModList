@@ -48,33 +48,27 @@ Create a new class and implement it to `OpenModConfigListener`. Put the class in
 ```java
 public class MyModConfigListener implements OpenModConfigListener { 
     @Override 
-    public void openConfigGui() { 
-        
+    public void openConfigGui(String modid) {
+        if (modid.equals("yourmodid")) {
+            //Your thing
+        }
     } 
      
     @Override 
-    public void onSave(List<ConfigValue> values) { 
-        
-    } 
-     
-    @Override 
-    public boolean autoSaveOnGuiExit() { 
-        return false; 
+    public boolean hasConfigGui(String modid) {
+        return modid.equals("yourmodid");
     }
 }
 ```
 ```json
 {
-  "config_listener": "random.package.MyModConfigListener"
+  "listeners": [
+    "random.package.MyModConfigListener"
+  ]
 }
 ```
-To use the mod newest config gui, do this:
-```java
-List<ConfigValue> list = new ArrayList<>();
-list.add(ConfigValue.createConfigValue("category name", "name of the value", GuiConfigTextField.TextFieldInputType.TEXT, "default value")); 
-Minecraft.getInstance().displayGuiScreen(RiftModList.getConfigScreen(this, RiftModList.guiModList, list, RiftModList.getModByID("MOD_ID")));
-```
-Enable `autoSaveOnGuiExit()` if you want it to save on force quit like pressing esc.
+To use the mod config gui, copy this lol: https://github.com/shedaniel/Rift-ModList/blob/master/src/main/java/me/shedaniel/listener/OpenModConfigListener.java
+
 
 ### Gradle Repo or idk
 I can't get it to jitpack if you can help me kthx
