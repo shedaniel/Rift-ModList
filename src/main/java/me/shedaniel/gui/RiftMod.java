@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.ResourceLocation;
+import org.dimdev.riftloader.RiftLoader;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -26,7 +27,7 @@ public class RiftMod {
 	private List<String> authors;
 	private String id, name, versions, url, description;
 	private ResourceLocation resourceLocation;
-	private OpenModConfigListener configListener;
+	private boolean hasConfigListener;
 	
 	public RiftMod(String id, File file) {
 		this(id, id, file, false);
@@ -40,7 +41,6 @@ public class RiftMod {
 		this.description = "A mod for Rift.";
 		this.authors = new ArrayList<>();
 		this.nativeImage = null;
-		this.configListener = null;
 		if (loadIcon)
 			tryLoadPackIcon(file, "pack.png");
 	}
@@ -60,19 +60,24 @@ public class RiftMod {
 		return false;
 	}
 	
-	public OpenModConfigListener getConfigListener() {
-		return configListener;
-	}
-	
 	public boolean runConfigListener() {
-		if (configListener == null)
-			return false;
-		configListener.openConfigGui();
+		for (OpenModConfigListener listener : RiftLoader.instance.getListeners(OpenModConfigListener.class)) {
+			try {
+				listener.openConfigGui(this.getId());
+			} catch (Exception e) {
+			    e.printStackTrace();
+				return false;
+			}
+		}
 		return true;
 	}
 	
 	public boolean hasConfigListener() {
-		return configListener != null;
+		for (OpenModConfigListener listener : RiftLoader.instance.getListeners(OpenModConfigListener.class)) {
+			if (listener.hasConfigGui(this.getId()))
+				return true;
+		}
+		return false;
 	}
 	
 	public String getDescription() {
@@ -157,12 +162,6 @@ public class RiftMod {
 			e.printStackTrace();
 		}
 		return defaultAnswer;
-	}
-	
-	public void setConfigListener(OpenModConfigListener configListener) {
-		if (configListener == null)
-			return;
-		this.configListener = configListener;
 	}
 	
 	public OpenModConfigListener findConfigListener(String path) {

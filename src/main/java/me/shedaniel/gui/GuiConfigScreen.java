@@ -2,6 +2,7 @@ package me.shedaniel.gui;
 
 import com.google.common.collect.Lists;
 import me.shedaniel.gui.components.GuiConfigCheckBox;
+import me.shedaniel.gui.components.GuiConfigOnOffButton;
 import me.shedaniel.gui.components.GuiConfigTextField;
 import me.shedaniel.listener.OpenModConfigListener;
 import me.shedaniel.utils.ConfigValue;
@@ -13,10 +14,8 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.MathHelper;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class GuiConfigScreen extends GuiScreen {
 	
@@ -30,6 +29,7 @@ public class GuiConfigScreen extends GuiScreen {
 	private List<IGuiEventListener> children = Lists.<IGuiEventListener>newArrayList();
 	private OpenModConfigListener listener;
 	private GuiButton saveButton;
+	private Consumer<List<ConfigValue>> onSave = null;
 	
 	public GuiConfigScreen(OpenModConfigListener listener, GuiScreen parent, RiftMod mod, int width, int height) {
 		this.parent = parent;
@@ -39,6 +39,14 @@ public class GuiConfigScreen extends GuiScreen {
 		this.top = 52;
 		this.categories = new HashMap<>();
 		this.listener = listener;
+	}
+	
+	public Consumer<List<ConfigValue>> getOnSave() {
+		return onSave;
+	}
+	
+	public void setOnSave(Consumer<List<ConfigValue>> onSave) {
+		this.onSave = onSave;
 	}
 	
 	@Override
@@ -70,9 +78,12 @@ public class GuiConfigScreen extends GuiScreen {
 					values.add(configValue.clone().setObject(((GuiConfigTextField) eventListener).getText()));
 				if (eventListener instanceof GuiConfigCheckBox)
 					values.add(configValue.clone().setObject(((GuiConfigCheckBox) eventListener).isSelected()));
+				if (eventListener instanceof GuiConfigOnOffButton)
+					values.add(configValue.clone().setObject(((GuiConfigOnOffButton) eventListener).isSelected()));
 			});
 		});
-		this.listener.onSave(values);
+		if (this.onSave != null)
+			this.onSave.accept(new LinkedList<>(values));
 	}
 	
 	@Override
@@ -367,19 +378,8 @@ public class GuiConfigScreen extends GuiScreen {
 	@Override
 	public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_) {
 		if (p_keyPressed_1_ == 256 && this.allowCloseWithEscape()) {
-			try {
-				if (listener.autoSaveOnGuiExit())
-					saveAll();
-				this.close();
-				this.mc.displayGuiScreen(parent);
-			} catch (Exception e) {
-				this.mc.displayGuiScreen(new GuiDirtMessageScreen("Can't save config.") {
-					@Override
-					public boolean allowCloseWithEscape() {
-						return true;
-					}
-				});
-			}
+			this.close();
+			this.mc.displayGuiScreen(parent);
 			return true;
 		} else {
 			return super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);
