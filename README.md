@@ -1,4 +1,5 @@
 # Rift-ModList
+[![](https://api.travis-ci.org/shedaniel/Rift-ModList.svg?branch=master)](https://travis-ci.org/shedaniel/Rift-ModList/)<br>
 This mod adds a mod list to your client.
 
 Forked from https://gitlab.com/gbui/RiftModList

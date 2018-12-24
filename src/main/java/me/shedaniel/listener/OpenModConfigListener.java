@@ -7,10 +7,8 @@ import java.util.List;
 
 public interface OpenModConfigListener {
 	
-	public void openConfigGui();
+	public void openConfigGui(String modid);
 	
-	public void onSave(List<ConfigValue> values);
-	
-	public boolean autoSaveOnGuiExit();
+	public boolean hasConfigGui(String modid);
 	
 }
