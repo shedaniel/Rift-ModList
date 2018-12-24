@@ -155,7 +155,7 @@ public class GuiConfigCategory extends GuiEventHandler {
     public boolean mouseClicked(double mouseX, double mouseY, int p_mouseClicked_5_) {
         if (mouseY > yPos && mouseY < yPos + 20) {
             contracted = !contracted;
-            Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+            Minecraft.getInstance().getSoundHandler().play(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             return true;
         }
         for(ConfigValue configValue : configValues) {

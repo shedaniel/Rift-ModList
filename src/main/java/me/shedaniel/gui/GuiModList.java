@@ -68,7 +68,7 @@ public class GuiModList extends GuiScreen {
         });
         this.guiModListContent = new GuiModListContent(this, "");
         
-        this.searchBox = new GuiTextField(103, this.fontRenderer, this.width / 2 - 100, 32, 200, 20, this.searchBox) {
+        this.searchBox = new GuiTextField(103, this.fontRenderer, this.width / 2 - 100, 32, 200, 20) {
             @Override
             public void setFocused(boolean var1) {
                 super.setFocused(true);
@@ -97,8 +97,8 @@ public class GuiModList extends GuiScreen {
                 }
             }
         });
-        this.children.add(searchBox);
-        this.children.add(guiModListContent);
+        this.eventListeners.add(searchBox);
+        this.eventListeners.add(guiModListContent);
         this.searchBox.setFocused(true);
         this.searchBox.setCanLoseFocus(false);
     }
