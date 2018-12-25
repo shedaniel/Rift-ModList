@@ -16,6 +16,10 @@ public abstract class GuiConfigSlider extends GuiButton {
         this.displayString = getDisplayString(sliderValue);
     }
     
+    public double getSliderValue() {
+        return sliderValue;
+    }
+    
     @Override
     public int getHoverState(boolean flag) {
         return 0;

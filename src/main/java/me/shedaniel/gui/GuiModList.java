@@ -149,19 +149,11 @@ public class GuiModList extends GuiScreen {
         }
     }
     
-    private String getSearchBoxText() {
-        try {
-            return this.searchBox.getText();
-        } catch (Exception e) {
-        }
-        return "";
-    }
-    
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
         this.guiModListContent.drawScreen(mouseX, mouseY, partialTicks);
         this.searchBox.drawTextField(mouseX, mouseY, partialTicks);
-        this.drawCenteredString(this.fontRenderer, I18n.format("riftmodlist.mods"), this.width / 2, 16, 16777215);
+        this.drawCenteredString(this.fontRenderer, I18n.format("riftmodlist.loaded_mods"), this.width / 2, 16, 16777215);
         super.render(mouseX, mouseY, partialTicks);
     }
     
