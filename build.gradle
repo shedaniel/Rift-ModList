@@ -27,8 +27,6 @@ repositories {
     maven { url 'https://www.dimdev.org/maven/' }
 }
 
-
-
 mixin {
     defaultObfuscationEnv notch
     add sourceSets.main, 'mixins.riftmodlist.refmap.json'
@@ -39,13 +37,6 @@ minecraft {
     mappings = 'snapshot_20180908'
     runDir = 'run'
     tweakClass = 'org.dimdev.riftloader.launch.RiftLoaderClientTweaker'
-}
-
-allprojects {
-    repositories {
-        jcenter()
-        maven { url "https://jitpack.io" }
-    }
 }
 
 dependencies {
