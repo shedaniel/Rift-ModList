@@ -1,13 +1,19 @@
 {
   "id": "riftmodlist",
   "name": "Rift Mod List",
-  "version": "1.6",
+  "version": "2.0b",
   "authors": [
     "Danielshe"
   ],
   "listeners": [
-    "me.shedaniel.RiftModList",
-    "me.shedaniel.gui.config.RiftModListConfigListener"
+    {
+      "className": "me.shedaniel.RiftModList",
+      "side": "client"
+    },
+    {
+      "className": "me.shedaniel.gui.config.RiftModListConfigListener",
+      "side": "client"
+    }
   ],
   "url": "https://shedaniel.me",
   "description": "Adds a mod list to your client."

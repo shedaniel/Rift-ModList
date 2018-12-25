@@ -19,7 +19,7 @@ public class RiftModListConfigListener implements OpenModConfigListener {
             list.add(ConfigValue.createSliderConfigValue("Cool Sliders", "Play with this slider it is fun", ConfigValue.ValueType.SLIDER, .5D, aDouble -> {
                 return String.format("Value: %d", Math.round(aDouble * 100));
             }));
-            Minecraft.getInstance().displayGuiScreen(RiftModList.getConfigScreen(this, RiftModList.guiModList, list, RiftModList.getModByID("riftmodlist"), values -> {
+            Minecraft.getInstance().displayGuiScreen(RiftModList.getConfigScreen(list, RiftModList.getModByID("riftmodlist"), values -> {
             
             }));
         }

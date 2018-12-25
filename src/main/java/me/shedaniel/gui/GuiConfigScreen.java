@@ -3,6 +3,7 @@ package me.shedaniel.gui;
 import com.google.common.collect.Lists;
 import me.shedaniel.gui.components.GuiConfigCheckBox;
 import me.shedaniel.gui.components.GuiConfigOnOffButton;
+import me.shedaniel.gui.components.GuiConfigSlider;
 import me.shedaniel.gui.components.GuiConfigTextField;
 import me.shedaniel.listener.OpenModConfigListener;
 import me.shedaniel.utils.ConfigValue;
@@ -27,18 +28,24 @@ public class GuiConfigScreen extends GuiScreen {
 	private boolean clickedScrollbar;
 	private RiftMod mod;
 	private List<IGuiEventListener> children = Lists.<IGuiEventListener>newArrayList();
-	private OpenModConfigListener listener;
 	private GuiButton saveButton;
 	private Consumer<List<ConfigValue>> onSave = null;
 	
-	public GuiConfigScreen(OpenModConfigListener listener, GuiScreen parent, RiftMod mod, int width, int height) {
+	public GuiConfigScreen(GuiScreen parent, RiftMod mod, int width, int height) {
 		this.parent = parent;
 		this.mod = mod;
 		this.width = width;
 		this.height = height;
 		this.top = 52;
 		this.categories = new HashMap<>();
-		this.listener = listener;
+	}
+	
+	public GuiScreen getParent() {
+		return parent;
+	}
+	
+	public void setParent(GuiScreen parent) {
+		this.parent = parent;
 	}
 	
 	public Consumer<List<ConfigValue>> getOnSave() {
@@ -80,6 +87,8 @@ public class GuiConfigScreen extends GuiScreen {
 					values.add(configValue.clone().setObject(((GuiConfigCheckBox) eventListener).isSelected()));
 				if (eventListener instanceof GuiConfigOnOffButton)
 					values.add(configValue.clone().setObject(((GuiConfigOnOffButton) eventListener).isSelected()));
+				if (eventListener instanceof GuiConfigSlider)
+					values.add(configValue.clone().setObject(((GuiConfigSlider) eventListener).getSliderValue()));
 			});
 		});
 		if (this.onSave != null)
@@ -213,9 +222,8 @@ public class GuiConfigScreen extends GuiScreen {
 			k1 = MathHelper.clamp(k1, 32, this.height - this.top - 8);
 			int l1 = (int) this.amountScrolled * (this.height - this.top - k1) / j1 + this.top;
 			
-			if (l1 < this.top) {
+			if (l1 < this.top)
 				l1 = this.top;
-			}
 			
 			bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
 			bufferbuilder.pos((double) i, (double) this.height, 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 255).endVertex();
