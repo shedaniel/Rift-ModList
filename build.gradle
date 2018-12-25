@@ -40,6 +40,6 @@ minecraft {
 }
 
 dependencies {
-    implementation 'org.dimdev:rift:1.0.3-45:dev'
+    implementation 'org.dimdev:rift:1.0.4-87:dev'
     implementation 'com.google.code.gson:gson:2.8.5'
 }
