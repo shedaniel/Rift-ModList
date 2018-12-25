@@ -47,6 +47,7 @@ public class RiftModList implements InitializationListener {
             configScreen.getCategories().put(entry.getKey(), entry.getValue());
             configScreen.getChildren().add(entry.getValue());
         }
+        configScreen.setOnSave(onSave);
         return configScreen;
     }
     
