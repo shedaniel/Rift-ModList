@@ -40,7 +40,7 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
 	
 	@Inject(method = "addSingleplayerMultiplayerButtons", at = @At("RETURN"))
 	private void onAddSingleplayerMultiplayerButtons(int y, int dy, CallbackInfo ci) {
-		GuiButton button = new GuiButton(100, width / 2 - 100, y + dy * 2, 98, 20, I18n.format("riftmodlist.mods")) {
+		GuiButton button = new GuiButton(100, width / 2 - 100, y + dy * 2, 98, 20, I18n.format("riftmodlist.mods", RiftLoader.instance.getMods().size())) {
 			@Override
 			public void onClick(double mouseX, double mouseY) {
 				if (RiftModList.guiModList == null)

@@ -149,14 +149,6 @@ public class GuiModList extends GuiScreen {
         }
     }
     
-    private String getSearchBoxText() {
-        try {
-            return this.searchBox.getText();
-        } catch (Exception e) {
-        }
-        return "";
-    }
-    
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
         this.guiModListContent.drawScreen(mouseX, mouseY, partialTicks);

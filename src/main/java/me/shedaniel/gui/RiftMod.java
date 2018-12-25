@@ -27,7 +27,6 @@ public class RiftMod {
 	private List<String> authors;
 	private String id, name, versions, url, description;
 	private ResourceLocation resourceLocation;
-	private boolean hasConfigListener;
 	
 	public RiftMod(String id, File file) {
 		this(id, id, file, false);
@@ -61,6 +60,8 @@ public class RiftMod {
 	}
 	
 	public boolean runConfigListener() {
+		if (!hasConfigListener())
+			return false;
 		for (OpenModConfigListener listener : RiftLoader.instance.getListeners(OpenModConfigListener.class)) {
 			try {
 				listener.openConfigGui(this.getId());
