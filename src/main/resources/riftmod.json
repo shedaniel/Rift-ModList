@@ -7,11 +7,11 @@
   ],
   "listeners": [
     {
-      "className": "me.shedaniel.RiftModList",
+      "class": "me.shedaniel.RiftModList",
       "side": "client"
     },
     {
-      "className": "me.shedaniel.gui.config.RiftModListConfigListener",
+      "class": "me.shedaniel.gui.config.RiftModListConfigListener",
       "side": "client"
     }
   ],
