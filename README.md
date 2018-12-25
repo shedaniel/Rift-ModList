@@ -71,4 +71,21 @@ To use the mod config gui, copy this lol: [Random Example](https://github.com/sh
 
 
 ### Gradle Repo or idk
-I can't get it to jitpack if you can help me kthx
+```
+repositories {
+    mavenCentral()
+    maven { url 'https://www.jitpack.io' }
+}
+```
+##### 1.13
+```
+dependencies {
+  implementation 'com.github.shedaniel:Rift-ModList:1.13-SNAPSHOT'
+}
+```
+##### 1.13.2
+```
+dependencies {
+  implementation 'com.github.shedaniel:Rift-ModList:3840eeabf8'
+}
+```
