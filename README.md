@@ -67,7 +67,7 @@ public class MyModConfigListener implements OpenModConfigListener {
   ]
 }
 ```
-To use the mod config gui, copy this lol: https://github.com/shedaniel/Rift-ModList/blob/master/src/main/java/me/shedaniel/listener/OpenModConfigListener.java
+To use the mod config gui, copy this lol: [Random Example](https://github.com/shedaniel/Rift-ModList/blob/master/src/main/java/me/shedaniel/gui/config/RiftModListConfigListener.java)
 
 
 ### Gradle Repo or idk
