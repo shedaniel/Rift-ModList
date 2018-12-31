@@ -21,14 +21,10 @@ public class MixinGuiIngameMenu extends GuiScreen {
 		addButton(new GuiButton(101, width / 2 - 100, this.height / 4 + 8 + 24 * 2, 200, 20, I18n.format("riftmodlist.mods", RiftLoader.instance.getMods().size())) {
 			@Override
 			public void onClick(double mouseX, double mouseY) {
-				if (RiftModList.guiModList == null)
-					RiftModList.guiModList = new GuiModList();
-				else
-					RiftModList.guiModList.getGuiModListContent().setCurrentIndex(-1);
-				RiftModList.guiModList.lastIndex = -1;
-				RiftModList.guiModList.setPreviousGui(Minecraft.getInstance().currentScreen);
-				RiftModList.guiModList.reloadSearch();
-				mc.displayGuiScreen(RiftModList.guiModList);
+				GuiModList guiModList = new GuiModList();
+				guiModList.setPreviousGui(Minecraft.getInstance().currentScreen);
+				guiModList.reloadSearch();
+				mc.displayGuiScreen(guiModList);
 			}
 		});
 	}
