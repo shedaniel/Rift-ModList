@@ -5,6 +5,7 @@ import me.shedaniel.gui.GuiConfigScreen;
 import me.shedaniel.gui.GuiModList;
 import me.shedaniel.gui.RiftMod;
 import me.shedaniel.utils.ConfigValue;
+import net.minecraft.client.Minecraft;
 import org.dimdev.riftloader.listener.InitializationListener;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
@@ -19,8 +20,6 @@ import static me.shedaniel.gui.GuiModList.regenerateMods;
 
 public class RiftModList implements InitializationListener {
     
-    public static GuiModList guiModList;
-    
     @Override
     public void onInitialization() {
         MixinBootstrap.init();
@@ -28,7 +27,7 @@ public class RiftModList implements InitializationListener {
     }
     
     public static GuiConfigScreen getConfigScreen(List<ConfigValue> values, RiftMod mod, Consumer<List<ConfigValue>> onSave) {
-        GuiConfigScreen configScreen = new GuiConfigScreen(guiModList, mod, RiftModList.guiModList.width, RiftModList.guiModList.height);
+        GuiConfigScreen configScreen = new GuiConfigScreen(Minecraft.getInstance().currentScreen, mod, Minecraft.getInstance().mainWindow.getScaledWidth(), Minecraft.getInstance().mainWindow.getScaledHeight());
         Map<String, GuiConfigCategory> categoryMap = new HashMap<>();
         for(ConfigValue value : values) {
             String categoryName = value.getCategory();

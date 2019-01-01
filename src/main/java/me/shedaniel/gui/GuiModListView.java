@@ -122,7 +122,7 @@ public class GuiModListView extends GuiScreen {
 	public boolean keyPressed(int p_keyPressed_1_, int p_keyPressed_2_, int p_keyPressed_3_) {
 		if (p_keyPressed_1_ == 256 && this.allowCloseWithEscape()) {
 			this.close();
-			this.mc.displayGuiScreen(RiftModList.guiModList);
+			this.mc.displayGuiScreen(new GuiModList());
 			return true;
 		} else {
 			return super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_);

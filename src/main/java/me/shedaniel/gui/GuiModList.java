@@ -28,6 +28,7 @@ public class GuiModList extends GuiScreen {
     private GuiButton configButton;
     
     public GuiModList() {
+        lastIndex = -1;
         configString = I18n.format("riftmodlist.config");
         regenerateMods();
     }

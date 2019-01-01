@@ -1,6 +1,5 @@
 package me.shedaniel.mixin;
 
-import me.shedaniel.RiftModList;
 import me.shedaniel.gui.GuiModList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -19,59 +18,55 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GuiMainMenu.class)
 public abstract class MixinGuiMainMenu extends GuiScreen {
-	
-	@ModifyArg(
-			method = "addSingleplayerMultiplayerButtons",
-			at = @At(
-					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiMainMenu;addButton(Lnet/minecraft/client/gui/GuiButton;)Lnet/minecraft/client/gui/GuiButton;",
-					ordinal = 2
-			)
-	)
-	private GuiButton getRealmsButton(GuiButton original) {
-		GuiButton button = new GuiButton(original.id, width / 2 + 2, original.y, 98, 20, I18n.format("menu.online")) {
-			@Override
-			public void onClick(double mouseX, double mouseY) {
-				switchToRealms();
-			}
-		};
-		return button;
-	}
-	
-	@Inject(method = "addSingleplayerMultiplayerButtons", at = @At("RETURN"))
-	private void onAddSingleplayerMultiplayerButtons(int y, int dy, CallbackInfo ci) {
-		GuiButton button = new GuiButton(100, width / 2 - 100, y + dy * 2, 98, 20, I18n.format("riftmodlist.mods", RiftLoader.instance.getMods().size())) {
-			@Override
-			public void onClick(double mouseX, double mouseY) {
-				if (RiftModList.guiModList == null)
-					RiftModList.guiModList = new GuiModList();
-				else
-					RiftModList.guiModList.getGuiModListContent().setCurrentIndex(-1);
-				RiftModList.guiModList.lastIndex = -1;
-				RiftModList.guiModList.setPreviousGui(Minecraft.getInstance().currentScreen);
-				RiftModList.guiModList.reloadSearch();
-				mc.displayGuiScreen(RiftModList.guiModList);
-			}
-		};
-		addButton(button);
-	}
-	
-	@Redirect(
-			method = "render",
-			at = @At(
-					value = "INVOKE",
-					target = "Lnet/minecraft/client/gui/GuiMainMenu;drawString(Lnet/minecraft/client/gui/FontRenderer;Ljava/lang/String;III)V",
-					ordinal = 0
-			)
-	)
-	private void onDrawMinecraftVersion(GuiMainMenu gui, FontRenderer fontRenderer, String s, int x, int y, int color) {
-		drawString(fontRenderer, s, x, y - 10, color);
-		drawString(fontRenderer, I18n.format("riftmodlist.mods_loaded", RiftLoader.instance.getMods().size()), x, y, color);
-	}
-	
-	private void switchToRealms() {
-		RealmsBridge realmsbridge = new RealmsBridge();
-		realmsbridge.switchToRealms(this);
-	}
-	
+    
+    @ModifyArg(
+            method = "addSingleplayerMultiplayerButtons",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/GuiMainMenu;addButton(Lnet/minecraft/client/gui/GuiButton;)Lnet/minecraft/client/gui/GuiButton;",
+                    ordinal = 2
+            )
+    )
+    private GuiButton getRealmsButton(GuiButton original) {
+        GuiButton button = new GuiButton(original.id, width / 2 + 2, original.y, 98, 20, I18n.format("menu.online")) {
+            @Override
+            public void onClick(double mouseX, double mouseY) {
+                switchToRealms();
+            }
+        };
+        return button;
+    }
+    
+    @Inject(method = "addSingleplayerMultiplayerButtons", at = @At("RETURN"))
+    private void onAddSingleplayerMultiplayerButtons(int y, int dy, CallbackInfo ci) {
+        GuiButton button = new GuiButton(100, width / 2 - 100, y + dy * 2, 98, 20, I18n.format("riftmodlist.mods", RiftLoader.instance.getMods().size())) {
+            @Override
+            public void onClick(double mouseX, double mouseY) {
+                GuiModList guiModList = new GuiModList();
+                guiModList.setPreviousGui(Minecraft.getInstance().currentScreen);
+                guiModList.reloadSearch();
+                mc.displayGuiScreen(guiModList);
+            }
+        };
+        addButton(button);
+    }
+    
+    @Redirect(
+            method = "render",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/GuiMainMenu;drawString(Lnet/minecraft/client/gui/FontRenderer;Ljava/lang/String;III)V",
+                    ordinal = 0
+            )
+    )
+    private void onDrawMinecraftVersion(GuiMainMenu gui, FontRenderer fontRenderer, String s, int x, int y, int color) {
+        drawString(fontRenderer, s, x, y - 10, color);
+        drawString(fontRenderer, I18n.format("riftmodlist.mods_loaded", RiftLoader.instance.getMods().size()), x, y, color);
+    }
+    
+    private void switchToRealms() {
+        RealmsBridge realmsbridge = new RealmsBridge();
+        realmsbridge.switchToRealms(this);
+    }
+    
 }
