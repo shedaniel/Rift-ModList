@@ -1,0 +1,20 @@
+{
+  "riftmodlist.mods_loaded": "Rift Mod Loader: %s modi laaditud",
+  "riftmodlist.mods": "Modid (%d laaditud)",
+  "riftmodlist.openFolder": "Ava modide kaust",
+  "riftmodlist.loaded_mods": "Laaditud modid",
+  "riftmodlist.authors": "Autor",
+  "riftmodlist.noone": "Mitte Keegi",
+  "riftmodlist.view": "Vaata",
+  "riftmodlist.versions": "Versioonid: %s",
+  "riftmodlist.url": "Veebileht: %s",
+  "riftmodlist.visit_website": "Külasta veebilehte",
+  "riftmodlist.done": "Valmis",
+  "riftmodlist.id": "Modi ID: %s",
+  "riftmodlist.rift.description": "Rift on kergekaaluline modifitseerimise API, teek ja modilaadija Minecraft 1.13-le. Rifti põhieesmärk on luua Minecraftile modulaarsem ja kergem modifitseerimise API. Rift ei ole mõeldud Forge'ga konkureerima või seda asendama, pigem teeb seda Rift koos valikuliste kogukonna poolt loodud teegi modidega.",
+  "riftmodlist.optifine.description": "OptiFine on Minecrafti optimeerimise moodul.\nSee võimaldab Minecraftil kiiremini töötada ning parem välja näha koos HD-tekstuuride toe ja paljude seadistusvõimalustega.",
+  "riftmodlist.cannot_config": "Ei pääse seadistusele ligi",
+  "riftmodlist.config": "Seadista",
+  "riftmodlist.search_mods": "Otsi mode...",
+  "riftmodlist.config_done": "Valmis ja salvesta"
+}
