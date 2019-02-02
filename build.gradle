@@ -16,7 +16,7 @@ apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'java'
 
 group 'me.shedaniel'
-version '2.0.1a'
+version '2.0.2a'
 archivesBaseName = 'Rift-ModList'
 
 sourceCompatibility = 1.8
@@ -40,6 +40,5 @@ minecraft {
 }
 
 dependencies {
-    implementation 'org.dimdev:rift:1.0.4-87:dev'
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'org.dimdev:rift:1.0.4-105:dev'
 }

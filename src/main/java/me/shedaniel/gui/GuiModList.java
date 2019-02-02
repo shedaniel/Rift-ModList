@@ -39,11 +39,8 @@ public class GuiModList extends GuiScreen {
             RiftMod mod = new RiftMod(modInfo.id, modInfo.name, modInfo.source, false);
             mod.setAuthors(modInfo.authors);
             mod.setVersions(mod.loadValueFromJar(modInfo.source, "version"));
-            mod.setUrl(mod.loadValueFromJar(modInfo.source, "url", (modInfo.id.equals("optifine") ? "https://www.optifine.net" : modInfo.id.equals("rift") ?
-                    "https://minecraft.curseforge.com/projects/rift" : "Unidentified")));
-            mod.setDescription(mod.loadValueFromJar(modInfo.source, "description",
-                    (modInfo.id.equals("optifine") ? I18n.format("riftmodlist.optifine.description") : modInfo.id.equals("rift") ?
-                            I18n.format("riftmodlist.rift.description") : "A mod for Rift.")));
+            mod.setUrl(mod.loadValueFromJar(modInfo.source, "url", (modInfo.id.equals("optifine") ? "https://www.optifine.net" : modInfo.id.equals("rift") ? "https://minecraft.curseforge.com/projects/rift" : "Unidentified")));
+            mod.setDescription(mod.loadValueFromJar(modInfo.source, "description", (modInfo.id.equals("optifine") ? I18n.format("riftmodlist.optifine.description") : modInfo.id.equals("rift") ? I18n.format("riftmodlist.rift.description") : "A mod for Rift.")));
             if (!mod.tryLoadPackIcon(modInfo.source, mod.loadValueFromJar(modInfo.source, "icon_file", "pack.png")) && modInfo.id.equals("rift")) {
                 mod.setResourceLocation(new ResourceLocation("riftmodlist:textures/gui/rift_pack.png"));
             }
@@ -75,8 +72,7 @@ public class GuiModList extends GuiScreen {
                 super.setFocused(true);
             }
         };
-        this.searchBox.setTextAcceptHandler((p_212350_1_, p_212350_2_) ->
-        {
+        this.searchBox.setTextAcceptHandler((p_212350_1_, p_212350_2_) -> {
             this.guiModListContent.searchFilter(p_212350_2_);
         });
         addButton(new GuiButton(104, this.width / 2 - 3, this.height - 30, 93, 20, I18n.format("riftmodlist.done")) {

@@ -1,8 +1,8 @@
 package me.shedaniel.gui;
 
 import me.shedaniel.gui.components.GuiConfigCheckBox;
-import me.shedaniel.gui.components.GuiConfigSlider;
 import me.shedaniel.gui.components.GuiConfigOnOffButton;
+import me.shedaniel.gui.components.GuiConfigSlider;
 import me.shedaniel.gui.components.GuiConfigTextField;
 import me.shedaniel.utils.ConfigValue;
 import net.minecraft.client.Minecraft;
@@ -90,8 +90,7 @@ public class GuiConfigCategory extends GuiEventHandler {
                 });
             } else {
                 GuiConfigTextField textField = null;
-                listeners.put(value, textField = new GuiConfigTextField(value.getType().getTextFieldInputType(), 1000 + i, Minecraft.getInstance().fontRenderer, Minecraft.getInstance().fontRenderer.getStringWidth(value.getName() + ": ") + 16,
-                        0, 200, 16, textField));
+                listeners.put(value, textField = new GuiConfigTextField(value.getType().getTextFieldInputType(), 1000 + i, Minecraft.getInstance().fontRenderer, Minecraft.getInstance().fontRenderer.getStringWidth(value.getName() + ": ") + 16, 0, 200, 16, textField));
                 textField.setMaxStringLength(256);
                 try {
                     textField.setText(value.getAsString());

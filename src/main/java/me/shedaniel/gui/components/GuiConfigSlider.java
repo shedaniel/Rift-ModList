@@ -36,12 +36,8 @@ public abstract class GuiConfigSlider extends GuiButton {
             }
             
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            drawTexturedModalRect(x
-                            + (int) (sliderValue * (width - 8)),
-                    this.y, 0, 66, 4, 20);
-            drawTexturedModalRect(x
-                            + (int) (sliderValue * (width - 8)) + 4,
-                    this.y, 196, 66, 4, 20);
+            drawTexturedModalRect(x + (int) (sliderValue * (width - 8)), this.y, 0, 66, 4, 20);
+            drawTexturedModalRect(x + (int) (sliderValue * (width - 8)) + 4, this.y, 196, 66, 4, 20);
         }
     }
     

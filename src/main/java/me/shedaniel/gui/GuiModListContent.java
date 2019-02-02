@@ -9,6 +9,7 @@ import net.minecraft.client.gui.GuiSlot;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,14 +24,7 @@ public class GuiModListContent extends GuiSlot {
     private int currentIndex = -1;
     
     public GuiModListContent(GuiModList parent, String searchTerm) {
-        super(
-                parent.getMinecraftInstance(),
-                parent.width,
-                parent.height,
-                60,
-                parent.height - 40,
-                40
-        );
+        super(parent.getMinecraftInstance(), parent.width, parent.height, 60, parent.height - 40, 40);
         this.parent = parent;
         this.modList = new ArrayList<>();
         this.fontRenderer = mc.fontRenderer;
@@ -45,6 +39,10 @@ public class GuiModListContent extends GuiSlot {
     
     public int getCurrentIndex() {
         return currentIndex;
+    }
+    
+    public void setCurrentIndex(int currentIndex) {
+        this.currentIndex = currentIndex;
     }
     
     public List<RiftMod> getModList() {
@@ -91,14 +89,13 @@ public class GuiModListContent extends GuiSlot {
         for(String name : mod.getAuthors()) {
             authors += " " + name;
         }
-        if (mod.getAuthors().size() == 0) authors += " " + I18n.format("riftmodlist.noone");
+        if (mod.getAuthors().size() == 0)
+            authors += " " + I18n.format("riftmodlist.noone");
         List<String> list = fontRenderer.listFormattedStringToWidth(authors, 157);
         for(String l : list) {
             fontRenderer.drawStringWithShadow(l, (float) (j + 32 + 2), (float) (i + 12 + 10 * list.indexOf(l)), 8421504);
         }
-        new GuiButton(700 + slotIndex, left + width / 2 + getListWidth() / 2 - 61, i + 6, 50, 20,
-                I18n.format("riftmodlist.view")) {
-        }.render(mouseXIn, mouseYIn, partialTicks);
+        new GuiButton(700 + slotIndex, left + width / 2 + getListWidth() / 2 - 61, i + 6, 50, 20, I18n.format("riftmodlist.view")) {}.render(mouseXIn, mouseYIn, partialTicks);
     }
     
     @Override
@@ -134,12 +131,8 @@ public class GuiModListContent extends GuiSlot {
         return this.width - 46;
     }
     
-    public void setCurrentIndex(int currentIndex) {
-        this.currentIndex = currentIndex;
-    }
-    
     public void searchFilter(String searchTerm) {
-        String currentId = currentIndex > 0 ? modList.get(currentIndex).getId() : "";
+        String currentId = currentIndex > 0 ? modList.get(MathHelper.clamp(currentIndex, 0, modList.size() - 1)).getId() : "";
         List<RiftMod> modList = new ArrayList<>();
         if (searchTerm.replaceAll(" ", "").equals(""))
             modList = new LinkedList<>(GuiModList.modList);
