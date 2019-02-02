@@ -19,14 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GuiMainMenu.class)
 public abstract class MixinGuiMainMenu extends GuiScreen {
     
-    @ModifyArg(
-            method = "addSingleplayerMultiplayerButtons",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/GuiMainMenu;addButton(Lnet/minecraft/client/gui/GuiButton;)Lnet/minecraft/client/gui/GuiButton;",
-                    ordinal = 2
-            )
-    )
+    @ModifyArg(method = "addSingleplayerMultiplayerButtons", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiMainMenu;addButton(Lnet/minecraft/client/gui/GuiButton;)Lnet/minecraft/client/gui/GuiButton;", ordinal = 2))
     private GuiButton getRealmsButton(GuiButton original) {
         GuiButton button = new GuiButton(original.id, width / 2 + 2, original.y, 98, 20, I18n.format("menu.online")) {
             @Override
@@ -51,14 +44,7 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
         addButton(button);
     }
     
-    @Redirect(
-            method = "render",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/GuiMainMenu;drawString(Lnet/minecraft/client/gui/FontRenderer;Ljava/lang/String;III)V",
-                    ordinal = 0
-            )
-    )
+    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiMainMenu;drawString(Lnet/minecraft/client/gui/FontRenderer;Ljava/lang/String;III)V", ordinal = 0))
     private void onDrawMinecraftVersion(GuiMainMenu gui, FontRenderer fontRenderer, String s, int x, int y, int color) {
         drawString(fontRenderer, s, x, y - 10, color);
         drawString(fontRenderer, I18n.format("riftmodlist.mods_loaded", RiftLoader.instance.getMods().size()), x, y, color);

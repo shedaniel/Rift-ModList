@@ -2,7 +2,6 @@ package me.shedaniel;
 
 import me.shedaniel.gui.GuiConfigCategory;
 import me.shedaniel.gui.GuiConfigScreen;
-import me.shedaniel.gui.GuiModList;
 import me.shedaniel.gui.RiftMod;
 import me.shedaniel.utils.ConfigValue;
 import net.minecraft.client.Minecraft;

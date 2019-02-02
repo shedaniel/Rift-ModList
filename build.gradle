@@ -6,7 +6,7 @@ buildscript {
         maven { url 'http://files.minecraftforge.net/maven' }
     }
     dependencies {
-        classpath 'com.github.Chocohead:ForgeGradle:moderniser-SNAPSHOT'
+        classpath 'com.github.Chocohead:ForgeGradle:jitpack-SNAPSHOT'
         classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
     }
 }
@@ -16,7 +16,7 @@ apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'java'
 
 group 'me.shedaniel'
-version '2.0.1b'
+version '2.0.2b'
 archivesBaseName = 'Rift-ModList'
 
 sourceCompatibility = 1.8
@@ -43,6 +43,6 @@ minecraft {
 }
 
 dependencies {
-    implementation 'com.github.Chocohead:Rift:f76cf44d887d290782590c99770876393c924333:dev'
+    implementation 'com.github.Chocohead:Rift:jitpack-SNAPSHOT:dev'
     implementation 'com.google.code.gson:gson:2.8.5'
 }
