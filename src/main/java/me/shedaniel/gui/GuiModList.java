@@ -1,5 +1,6 @@
 package me.shedaniel.gui;
 
+import me.shedaniel.api.ConfigRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -15,17 +16,19 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class GuiModList extends GuiScreen {
     
     public static List<RiftMod> modList = new ArrayList<>();
     public static String configString;
-    
+    public static int lastIndex = -1;
+    protected GuiScreen previousGui;
     @Nullable
     private GuiModListContent guiModListContent;
     private GuiTextField searchBox;
-    protected GuiScreen previousGui;
     private GuiButton configButton;
+    private String searchBoxSuggestion = I18n.format("riftmodlist.search_mods");
     
     public GuiModList() {
         lastIndex = -1;
@@ -75,22 +78,29 @@ public class GuiModList extends GuiScreen {
         this.searchBox.setTextAcceptHandler((p_212350_1_, p_212350_2_) -> {
             this.guiModListContent.searchFilter(p_212350_2_);
         });
-        addButton(new GuiButton(104, this.width / 2 - 3, this.height - 30, 93, 20, I18n.format("riftmodlist.done")) {
+        addButton(new GuiButton(104, this.width / 2 - 3, this.height - 30, 93, 20, I18n.format("gui.done")) {
             @Override
             public void onClick(double var1, double var3) {
                 close();
                 Minecraft.getInstance().displayGuiScreen(previousGui);
             }
         });
-        addButton(configButton = new GuiConfigButton(105, this.width - 100, this.height - 30, 90, 20, configString) {
+        addButton(configButton = new GuiButton(105, this.width - 100, this.height - 30, 90, 20, configString) {
             @Override
             public void onClick(double mouseX, double mouseY) {
-                if (!guiModListContent.getModList().get(guiModListContent.getCurrentIndex()).runConfigListener()) {
+                Optional<Runnable> runnableOptional = ConfigRegistry.getConfigRunnable(guiModListContent.getModList().get(guiModListContent.getCurrentIndex()).getId());
+                boolean worked = false;
+                try {
+                    if (runnableOptional.isPresent()) {
+                        runnableOptional.get().run();
+                        worked = true;
+                    }
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+                if (!worked) {
                     displayString = I18n.format("riftmodlist.cannot_config");
                     enabled = false;
-                } else {
-                    guiModListContent.setCurrentIndex(-1);
-                    lastIndex = -1;
                 }
             }
         });
@@ -123,10 +133,6 @@ public class GuiModList extends GuiScreen {
         return this.searchBox.charTyped(p_charTyped_1_, p_charTyped_2_);
     }
     
-    public static int lastIndex = -1;
-    
-    private String searchBoxSuggestion = I18n.format("riftmodlist.search_mods");
-    
     @Override
     public void tick() {
         this.searchBox.tick();
@@ -139,7 +145,7 @@ public class GuiModList extends GuiScreen {
             if (lastIndex != guiModListContent.getCurrentIndex()) {
                 lastIndex = guiModListContent.getCurrentIndex();
                 configButton.displayString = configString;
-                configButton.enabled = guiModListContent.getModList().get(guiModListContent.getCurrentIndex()).hasConfigListener();
+                configButton.enabled = ConfigRegistry.getConfigRunnable(guiModListContent.getModList().get(guiModListContent.getCurrentIndex()).getId()).isPresent();
             }
         } catch (Exception e) {
         

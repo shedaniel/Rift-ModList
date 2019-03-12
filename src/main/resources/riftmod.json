@@ -9,10 +9,6 @@
     {
       "class": "me.shedaniel.RiftModList",
       "side": "client"
-    },
-    {
-      "class": "me.shedaniel.gui.config.RiftModListConfigListener",
-      "side": "client"
     }
   ],
   "url": "https://shedaniel.me/Rift-ModList/",
